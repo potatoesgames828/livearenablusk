@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { CheckCircle2, Circle, Radio, Gamepad2, Heart, Gift, UserPlus, Share2, Activity, ArrowRight, Users, Trophy } from 'lucide-react';
+import { CheckCircle2, Circle, Radio, Gamepad2, Heart, Gift, UserPlus, Share2, Activity, ArrowRight, Users, Trophy, MonitorPlay, Bell, Music, AlertTriangle } from 'lucide-react';
 import { Badge, Card, EmptyState, PageHeader, Skeleton, Stat, StatusPill } from '@/components/ui';
 import { api, useAuth } from '@/lib/api';
 import { compact, connectorTone, labelConnector, labelRunner, labelSession, labelStream, runnerTone, sessionTone, streamTone } from '@/lib/format';
@@ -21,6 +21,9 @@ export default function OverviewPage() {
   const configs = useQuery({ queryKey: ['configs'], queryFn: () => api<GameConfig[]>('/games/configs') });
   const overview = useQuery({ queryKey: ['overview'], queryFn: () => api<Overview>('/stats/overview'), refetchInterval: 30_000 });
   const overlays = useQuery({ queryKey: ['overlays-all'], queryFn: () => api<Array<{ id: string }>>('/overlays') });
+  const recent = useQuery({ queryKey: ['history', '', 'recent'], queryFn: () => api<{ items: Array<{ id: string; gameName: string; round: number; startedAt: string; winnerName: string | null; session: { demo: boolean } }> }>('/account/history?pageSize=5') });
+  const usage = useQuery({ queryKey: ['usage'], queryFn: () => api<{ plan: { name: string }; usage: Array<{ key: string; label: string; used: number; limit: number }> }>('/account/usage') });
+  const nearLimit = (usage.data?.usage ?? []).filter((u) => u.limit > 0 && u.used / u.limit >= 0.8);
 
   const active = (sessions.data ?? []).filter((s) => !['IDLE', 'STOPPED'].includes(s.state));
   const ev = overview.data?.events7d ?? [];
@@ -106,6 +109,51 @@ export default function OverviewPage() {
           </div>
         )}
       </section>
+
+      <section aria-labelledby="atalhos" className="mb-6">
+        <h2 id="atalhos" className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Atalhos</h2>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[
+            { href: '/painel/jogos', label: 'Biblioteca de jogos', icon: Gamepad2, desc: 'Escolher e testar jogos' },
+            { href: '/painel/overlays', label: 'Overlay', icon: MonitorPlay, desc: 'Link único para o OBS' },
+            { href: '/painel/alertas', label: 'Alertas', icon: Bell, desc: 'Mensagens na tela' },
+            { href: '/painel/sons', label: 'Soundboard', icon: Music, desc: 'Sons dos jogos e alertas' },
+          ].map(({ href, label, icon: Icon, desc }) => (
+            <Link key={href} href={href} className="card flex min-h-20 items-center gap-3 p-4 transition hover:-translate-y-0.5 hover:border-white/20">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-violet-500/15 text-violet-300"><Icon className="size-5" aria-hidden /></span>
+              <span className="min-w-0"><span className="block truncate font-semibold text-white">{label}</span><span className="block truncate text-xs text-slate-400">{desc}</span></span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card title="Partidas recentes" action={<Link href="/painel/historico" className="text-sm text-blue-300 hover:underline">Ver histórico</Link>}>
+          {recent.isLoading ? <Skeleton className="h-24" /> : (recent.data?.items ?? []).length === 0 ? (
+            <p className="text-sm text-slate-400">Nenhuma partida ainda. Inicie uma LIVE de demonstração para testar.</p>
+          ) : (
+            <ul className="divide-y divide-white/5">
+              {recent.data!.items.map((r) => (
+                <li key={r.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                  <span className="min-w-0 truncate text-slate-200">{r.gameName} · rodada {r.round} {r.session.demo && <Badge tone="warn">demo</Badge>}</span>
+                  <span className="flex shrink-0 items-center gap-1 text-slate-300"><Trophy className="size-4 text-amber-400" aria-hidden />{r.winnerName ?? '—'}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+        <Card title="Avisos" subtitle={usage.data ? `Plano ${usage.data.plan.name}` : undefined} action={<Link href="/painel/assinatura" className="text-sm text-blue-300 hover:underline">Assinatura</Link>}>
+          {nearLimit.length === 0 ? (
+            <p className="flex items-center gap-2 text-sm text-slate-300"><CheckCircle2 className="size-4 text-green-400" aria-hidden /> Tudo certo: nenhum limite do plano perto de acabar.</p>
+          ) : (
+            <ul className="space-y-2">
+              {nearLimit.map((u) => (
+                <li key={u.key} className="flex items-center gap-2 text-sm text-amber-200"><AlertTriangle className="size-4 shrink-0" aria-hidden /> {u.label}: {u.used} de {u.limit}</li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
 
       <section aria-labelledby="resumo">
         <div className="mb-3 flex items-center justify-between">

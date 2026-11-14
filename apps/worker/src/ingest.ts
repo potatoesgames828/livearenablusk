@@ -1,7 +1,7 @@
 import type { Job } from 'bullmq';
 import type { Redis } from 'ioredis';
 import { liveEventSchema, channels, type LiveEvent, type GiftPayload, type LikePayload } from '@live-arena/shared';
-import { processEvent, RedisEventStore, type ProcessResult } from '@live-arena/event-engine';
+import { matchAlerts, processEvent, RedisEventStore, toAlertFx, type AlertConfig, type ProcessResult } from '@live-arena/event-engine';
 import { getPrisma, toJson } from '@live-arena/database';
 import { getOrRebuildSessionMeta, keys, pushRunnerMessages, QUEUES, getQueue, type SessionMeta } from '@live-arena/runtime';
 import { metrics, type Logger } from '@live-arena/observability';
@@ -18,6 +18,20 @@ class MetaCache {
     this.map.set(sessionId, { meta, at: Date.now() });
     if (this.map.size > 5000) this.map.clear();
     return meta;
+  }
+}
+
+/** Alertas do tenant em cache curto (evita consulta ao banco a cada evento). */
+class AlertCache {
+  private map = new Map<string, { items: AlertConfig[]; at: number }>();
+  async get(tenantId: string): Promise<AlertConfig[]> {
+    const c = this.map.get(tenantId);
+    if (c && Date.now() - c.at < 5000) return c.items;
+    const rows = await getPrisma().alertRule.findMany({ where: { tenantId, enabled: true }, take: 100 });
+    const items: AlertConfig[] = rows.map((r) => ({ id: r.id, name: r.name, enabled: r.enabled, trigger: r.trigger, message: r.message, emoji: r.emoji, color: r.color, soundId: r.soundId, volume: r.volume, durationMs: r.durationMs, cooldownMs: r.cooldownMs }));
+    this.map.set(tenantId, { items, at: Date.now() });
+    if (this.map.size > 5000) this.map.clear();
+    return items;
   }
 }
 
@@ -50,6 +64,7 @@ export function createIngestProcessor(deps: { redis: Redis; queueRedis: Redis; l
   const prisma = getPrisma();
   const lastStatusPublish = new Map<string, number>();
   const automationQueue = getQueue(QUEUES.automation, deps.queueRedis);
+  const alertCache = new AlertCache();
 
   return async function processIngest(job: Job<LiveEvent>): Promise<{ status: string }> {
     const end = metrics.eventProcessingSeconds.startTimer();
@@ -80,6 +95,17 @@ export function createIngestProcessor(deps: { redis: Redis; queueRedis: Redis; l
     if (result.status !== 'IGNORED' && event.type !== 'ROOM_USER') {
       await deps.redis.publish(channels.sessionEvents(event.tenantId, event.sessionId), JSON.stringify(feedItem(event, result)));
     }
+    // Alertas configurados (overlay): mesmo formato de gatilho das regras, com cooldown próprio.
+    if (result.status !== 'IGNORED' && result.matchContext) {
+      const alerts = await alertCache.get(event.tenantId).catch(() => [] as AlertConfig[]);
+      if (alerts.length) {
+        for (const m of matchAlerts(event, alerts, result.matchContext).slice(0, 3)) {
+          if (m.alert.cooldownMs > 0 && !(await store.acquireCooldown(`la:alert:${event.sessionId}:${m.alert.id}`, m.alert.cooldownMs))) continue;
+          await deps.redis.publish(channels.sessionFx(event.tenantId, event.sessionId), JSON.stringify(toAlertFx(m.alert, event, m.quantity)));
+        }
+      }
+    }
+
     // Contadores agregados no máximo 2x por segundo por sessão.
     const now = Date.now();
     if ((lastStatusPublish.get(event.sessionId) ?? 0) + 500 < now) {

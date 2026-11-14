@@ -111,3 +111,29 @@ export function errorMessage(err: unknown): string {
 export function hasPerm(user: Me | null, perm: string): boolean {
   return !!user?.permissions.includes(perm);
 }
+
+/** Requisição com corpo binário ou resposta binária (upload/preview de sons). */
+export async function apiBinary(path: string, init: { method?: string; body?: Blob; contentType?: string; retry?: boolean } = {}): Promise<Response> {
+  const token = useAuth.getState().token;
+  const res = await fetch(`/api${path}`, {
+    method: init.method ?? 'GET',
+    headers: {
+      'x-requested-with': 'live-arena',
+      ...(init.contentType ? { 'content-type': init.contentType } : {}),
+      ...(token ? { authorization: `Bearer ${token}` } : {}),
+    },
+    credentials: 'same-origin',
+    body: init.body,
+  });
+  if (res.status === 401 && init.retry !== false && (await refreshSession())) return apiBinary(path, { ...init, retry: false });
+  if (!res.ok) {
+    let body: ApiErrorBody | null = null;
+    try {
+      body = (await res.json()) as ApiErrorBody;
+    } catch {
+      /* sem corpo */
+    }
+    throw new ApiError(res.status, body?.error.code ?? 'INTERNAL', body?.error.message ?? 'Não foi possível concluir a ação.', body?.error.details);
+  }
+  return res;
+}

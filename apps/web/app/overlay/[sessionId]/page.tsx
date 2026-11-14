@@ -5,6 +5,7 @@ import { socketEvents } from '@live-arena/shared';
 import type { BaseSnapshot } from '@live-arena/game-engine';
 import { GameCanvas, type GameCanvasHandle } from '@/components/game-canvas';
 import { connectOverlaySocket } from '@/lib/realtime';
+import { UserOverlay } from '@/components/overlay/user-overlay';
 
 /**
  * Página de overlay (Browser Source). Somente leitura: recebe snapshots do
@@ -57,9 +58,22 @@ function Overlay({ sessionId }: { sessionId: string }) {
 
 export default function OverlayPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = use(params);
+  // Link único do criador: /overlay/<token> (token começa com "ovl_").
+  if (decodeURIComponent(sessionId).startsWith('ovl_')) {
+    return (
+      <Suspense>
+        <UserOverlayRoute token={decodeURIComponent(sessionId)} />
+      </Suspense>
+    );
+  }
   return (
     <Suspense>
       <Overlay sessionId={sessionId} />
     </Suspense>
   );
+}
+
+function UserOverlayRoute({ token }: { token: string }) {
+  const params = useSearchParams();
+  return <UserOverlay token={token} capture={params.get('capture') === '1'} />;
 }

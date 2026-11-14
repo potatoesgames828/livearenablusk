@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Module, Param, Post, Put } from '@nestjs/common';
 import { z } from 'zod';
-import { gameConfigBodySchema, isGameAllowed, type GameConfigBody } from '@live-arena/shared';
+import { catalogEntry, gameConfigBodySchema, isGameAllowed, type GameConfigBody } from '@live-arena/shared';
 import { defaultConfigFor, validateConfigAgainstManifest } from '@live-arena/game-engine';
 import { getGameModule, listManifests } from '@live-arena/games';
 import { audit, keys, readSessionMeta, writeSessionMeta, sendControl } from '@live-arena/runtime';
@@ -37,9 +37,32 @@ export class GamesController {
   async catalog(@Auth() auth: AuthContext) {
     const { limits } = await this.plans.limits(auth.tenantId);
     const enabled = new Set((await this.infra.prisma.game.findMany({ where: { enabled: true } })).map((g) => g.id));
+    const favs = new Set((await this.infra.prisma.favoriteGame.findMany({ where: { tenantId: auth.tenantId, userId: auth.userId } })).map((f) => f.gameId));
     return listManifests()
       .filter((m) => enabled.has(m.id))
-      .map((m) => ({ ...m, allowed: isGameAllowed(limits, m.id), defaultConfig: defaultConfigFor(m) }));
+      .map((m) => ({ ...m, allowed: isGameAllowed(limits, m.id), defaultConfig: defaultConfigFor(m), meta: catalogEntry(m.id) ?? null, favorite: favs.has(m.id) }))
+      .sort((a, b) => (a.meta?.sortOrder ?? 99) - (b.meta?.sortOrder ?? 99));
+  }
+
+  /** Favoritar / desfavoritar um jogo na biblioteca (por usuário). */
+  @Post(':gameId/favorite')
+  @HttpCode(200)
+  @RequirePerm('game:read')
+  async favorite(@Auth() auth: AuthContext, @Param('gameId') gameId: string) {
+    if (!getGameModule(gameId)) throw Errors.notFound('Jogo não encontrado.');
+    await this.infra.prisma.favoriteGame.upsert({
+      where: { tenantId_userId_gameId: { tenantId: auth.tenantId, userId: auth.userId, gameId } },
+      create: { tenantId: auth.tenantId, userId: auth.userId, gameId },
+      update: {},
+    });
+    return { ok: true, favorite: true };
+  }
+
+  @Delete(':gameId/favorite')
+  @RequirePerm('game:read')
+  async unfavorite(@Auth() auth: AuthContext, @Param('gameId') gameId: string) {
+    await this.infra.prisma.favoriteGame.deleteMany({ where: { tenantId: auth.tenantId, userId: auth.userId, gameId } });
+    return { ok: true, favorite: false };
   }
 
   @Get('configs')

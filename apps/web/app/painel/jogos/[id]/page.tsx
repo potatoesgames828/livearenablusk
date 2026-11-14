@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { use, useEffect, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Plus, Trash2, Save, RotateCcw, Copy, ChevronDown, ChevronUp } from 'lucide-react';
-import type { EventRule, GameConfigBody, RuleTrigger } from '@live-arena/shared';
+import type { EventRule, GameConfigBody } from '@live-arena/shared';
 import type { ActionDef, ParamDef } from '@live-arena/game-engine';
 import { Badge, Button, Card, Field, Input, Select, Skeleton, Switch, Tabs, confirmAction, toast } from '@/components/ui';
 import { GameCanvas } from '@/components/game-canvas';
@@ -11,16 +11,8 @@ import { DemoControls } from '@/components/demo-controls';
 import { api, ApiError, errorMessage, hasPerm, useAuth } from '@/lib/api';
 import { useLocalGame } from '@/lib/local-game';
 import type { CatalogGame, GameConfig } from '@/lib/types';
+import { TriggerEditor, triggerSummary } from '@/components/trigger-editor';
 
-const TRIGGER_LABELS: Record<RuleTrigger['kind'], string> = {
-  GIFT: 'Presente',
-  LIKE_THRESHOLD: 'Meta de curtidas',
-  CHAT_COMMAND: 'Comando no chat',
-  FOLLOW: 'Novo seguidor',
-  SHARE: 'Compartilhamento',
-  MEMBER: 'Entrada na LIVE',
-  SUBSCRIPTION: 'Assinatura',
-};
 
 function ParamInput({ def, value, onChange, id }: { def: ParamDef; value: unknown; onChange: (v: number | boolean | string) => void; id: string }) {
   if (def.type === 'boolean') return <Switch checked={Boolean(value ?? def.default)} onChange={onChange} label={def.label} description={def.help} />;
@@ -52,19 +44,7 @@ function RuleEditor({ rule, actions, onChange, onRemove, index }: { rule: EventR
   const [open, setOpen] = useState(index < 2);
   const action = actions.find((a) => a.id === rule.action);
   const t = rule.trigger;
-  const summary = `${TRIGGER_LABELS[t.kind]}${t.kind === 'GIFT' && t.minDiamonds ? ` (≥${t.minDiamonds}💎)` : ''}${t.kind === 'LIKE_THRESHOLD' ? ` a cada ${t.every}` : ''}${t.kind === 'CHAT_COMMAND' ? ` ${t.command}` : ''} → ${action?.label ?? rule.action}`;
-  const setTrigger = (kind: RuleTrigger['kind']) => {
-    const base: Record<RuleTrigger['kind'], RuleTrigger> = {
-      GIFT: { kind: 'GIFT' },
-      LIKE_THRESHOLD: { kind: 'LIKE_THRESHOLD', every: 100 },
-      CHAT_COMMAND: { kind: 'CHAT_COMMAND', command: '!comando' },
-      FOLLOW: { kind: 'FOLLOW' },
-      SHARE: { kind: 'SHARE' },
-      MEMBER: { kind: 'MEMBER' },
-      SUBSCRIPTION: { kind: 'SUBSCRIPTION' },
-    };
-    onChange({ ...rule, trigger: base[kind] });
-  };
+  const summary = `${triggerSummary(t)} → ${action?.label ?? rule.action}`;
   const id = `r${index}`;
   return (
     <li className="rounded-xl border border-line bg-white/[0.02]">
@@ -82,31 +62,7 @@ function RuleEditor({ rule, actions, onChange, onRemove, index }: { rule: EventR
             <Input id={`${id}-label`} value={rule.label ?? ''} onChange={(e) => onChange({ ...rule, label: e.target.value || undefined })} placeholder={summary} maxLength={80} />
           </Field>
           <Switch checked={rule.enabled} onChange={(v) => onChange({ ...rule, enabled: v })} label="Regra ativa" />
-          <Field label="Quando acontecer…" htmlFor={`${id}-trigger`}>
-            <Select id={`${id}-trigger`} value={t.kind} onChange={(e) => setTrigger(e.target.value as RuleTrigger['kind'])}>
-              {Object.entries(TRIGGER_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-            </Select>
-          </Field>
-          {t.kind === 'GIFT' && (
-            <>
-              <Field label="Mínimo de diamantes (opcional)" htmlFor={`${id}-min`} hint="Vazio = qualquer presente.">
-                <Input id={`${id}-min`} type="number" min={0} value={t.minDiamonds ?? ''} onChange={(e) => onChange({ ...rule, trigger: { ...t, minDiamonds: e.target.value === '' ? undefined : Number(e.target.value) } })} />
-              </Field>
-              <Field label="Nome do presente (opcional)" htmlFor={`${id}-gname`} hint="Ex.: Rose. Vazio = qualquer.">
-                <Input id={`${id}-gname`} value={t.giftName ?? ''} onChange={(e) => onChange({ ...rule, trigger: { ...t, giftName: e.target.value || undefined } })} />
-              </Field>
-            </>
-          )}
-          {t.kind === 'LIKE_THRESHOLD' && (
-            <Field label="A cada quantas curtidas" htmlFor={`${id}-every`}>
-              <Input id={`${id}-every`} type="number" min={1} value={t.every} onChange={(e) => onChange({ ...rule, trigger: { ...t, every: Math.max(1, Number(e.target.value)) } })} />
-            </Field>
-          )}
-          {t.kind === 'CHAT_COMMAND' && (
-            <Field label="Comando" htmlFor={`${id}-cmd`} hint="Começa com ! (ex.: !join)">
-              <Input id={`${id}-cmd`} value={t.command} onChange={(e) => onChange({ ...rule, trigger: { ...t, command: e.target.value.trim().slice(0, 32) } })} />
-            </Field>
-          )}
+          <TriggerEditor id={id} value={t} onChange={(trigger) => onChange({ ...rule, trigger })} />
           <Field label="…faça no jogo" htmlFor={`${id}-action`} hint={action?.description}>
             <Select id={`${id}-action`} value={rule.action} onChange={(e) => onChange({ ...rule, action: e.target.value, params: {} })}>
               {actions.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}

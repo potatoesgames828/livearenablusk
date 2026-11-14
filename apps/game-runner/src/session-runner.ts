@@ -138,7 +138,10 @@ export class SessionRunner {
       this.tickCount++;
       if (this.tickCount % PUBLISH_EVERY_TICKS === 0) this.publish();
       const ev = this.sim.drainEvents();
-      if (ev.length) this.pendingEvents.push(...ev);
+      if (ev.length) {
+        this.pendingEvents.push(...ev);
+        this.publishSoundCues(ev);
+      }
     } catch (err) {
       this.onError(err as Error);
     }
@@ -148,6 +151,23 @@ export class SessionRunner {
     if (this.tickTimes.length > 300) this.tickTimes.shift();
     if (!this.reading) void this.readMessages();
     void this.housekeeping();
+  }
+
+  private lastJoinCue = 0;
+  /** Avisa o overlay de momentos do jogo que podem tocar um som do soundboard. */
+  private publishSoundCues(ev: GameDomainEvent[]): void {
+    if (!this.meta) return;
+    const now = Date.now();
+    for (const e of ev) {
+      let slot: string | undefined;
+      if (e.type === 'roundStart') slot = 'game.roundStart';
+      else if (e.type === 'roundEnd') slot = 'game.victory';
+      else if (e.type === 'participation' && now - this.lastJoinCue > 1500) {
+        this.lastJoinCue = now;
+        slot = 'game.join';
+      }
+      if (slot) void this.redis.publish(channels.sessionFx(this.meta.tenantId, this.sessionId), JSON.stringify({ type: 'sound', slot })).catch(() => undefined);
+    }
   }
 
   private publish(): void {

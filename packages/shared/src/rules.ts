@@ -8,6 +8,8 @@ export const ruleTriggerSchema = z.discriminatedUnion('kind', [
     giftId: z.string().max(64).optional(),
     giftName: z.string().max(128).optional(),
     minDiamonds: z.number().int().min(0).optional(),
+    /** Faixa de valor: presentes até este valor (ex.: separar presentes pequenos e grandes). */
+    maxDiamonds: z.number().int().min(0).optional(),
   }),
   z.object({ kind: z.literal('LIKE_THRESHOLD'), every: z.number().int().min(1).max(1_000_000) }),
   z.object({
@@ -18,10 +20,21 @@ export const ruleTriggerSchema = z.discriminatedUnion('kind', [
       .max(32)
       .regex(/^![a-z0-9_]+$/i, 'Comandos começam com ! e usam letras, números ou _'),
   }),
+  z.object({
+    kind: z.literal('CHAT_KEYWORD'),
+    /** Palavra ou frase sem "!" (maiúsculas e acentos são ignorados). */
+    keyword: z.string().trim().min(1).max(40),
+    /** word = primeira palavra · contains = em qualquer parte · exact = comentário inteiro */
+    match: z.enum(['word', 'contains', 'exact']).default('word'),
+  }),
   z.object({ kind: z.literal('FOLLOW') }),
   z.object({ kind: z.literal('SHARE') }),
   z.object({ kind: z.literal('MEMBER') }),
   z.object({ kind: z.literal('SUBSCRIPTION') }),
+  /** Evento personalizado enviado pela API/automação (ex.: "meta_batida"). */
+  z.object({ kind: z.literal('CUSTOM'), name: z.string().trim().min(1).max(40).regex(/^[a-z0-9_.-]+$/i) }),
+  /** Espectadores na sala: dispara ao cruzar cada múltiplo de `every`. */
+  z.object({ kind: z.literal('VIEWERS_THRESHOLD'), every: z.number().int().min(1).max(1_000_000) }),
 ]);
 export type RuleTrigger = z.infer<typeof ruleTriggerSchema>;
 

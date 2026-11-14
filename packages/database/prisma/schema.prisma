@@ -88,6 +88,10 @@ model Tenant {
   gameConfigs     GameConfiguration[]
   sessions        LiveSession[]
   overlays        Overlay[]
+  favorites       FavoriteGame[]
+  sounds          SoundAsset[]
+  alertRules      AlertRule[]
+  soundBindings   SoundBinding[]
   streamConfigs   StreamConfiguration[]
   viewers         Viewer[]
   automations     Automation[]
@@ -350,7 +354,11 @@ model AutomationRule {
 model Overlay {
   id          String    @id @default(cuid())
   tenantId    String
-  sessionId   String
+  /// null = overlay do usuário (acompanha a transmissão ativa do tenant)
+  sessionId   String?
+  /// SESSION (link de uma LIVE) ou USER (link único e permanente do criador)
+  kind        String    @default("SESSION")
+  settings    Json      @default("{}")
   name        String
   tokenHash   String    @unique
   tokenPrefix String
@@ -360,7 +368,7 @@ model Overlay {
   createdAt   DateTime  @default(now())
 
   tenant  Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  session LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session LiveSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, sessionId])
 }
@@ -500,4 +508,68 @@ model Worker {
   lastHeartbeatAt DateTime @default(now())
 
   @@index([kind, lastHeartbeatAt])
+}
+
+/// Jogos favoritos de cada usuário (biblioteca).
+model FavoriteGame {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String
+  gameId    String
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId, gameId])
+}
+
+/// Áudio enviado pelo criador (soundboard). Bytes no banco: isolado por tenant, limite de 1 MB.
+model SoundAsset {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  mime      String
+  size      Int
+  sha256    String
+  data      Bytes
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+/// Alerta na tela (e som opcional) disparado por evento da LIVE. `trigger` usa o mesmo formato das regras de jogo.
+model AlertRule {
+  id         String   @id @default(cuid())
+  tenantId   String
+  name       String
+  enabled    Boolean  @default(true)
+  trigger    Json
+  message    String
+  emoji      String   @default("🎉")
+  color      String   @default("#a855f7")
+  soundId    String?
+  volume     Int      @default(80)
+  durationMs Int      @default(4000)
+  cooldownMs Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+/// Som associado a um momento dos jogos (vitória, entrada, eliminação, início de rodada).
+model SoundBinding {
+  id       String @id @default(cuid())
+  tenantId String
+  slot     String
+  soundId  String
+  volume   Int    @default(80)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, slot])
 }

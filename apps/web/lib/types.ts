@@ -1,9 +1,12 @@
+import type { CatalogEntry } from '@live-arena/shared';
 import type { GameManifest } from '@live-arena/game-engine';
 import type { GameConfigBody } from '@live-arena/shared';
 
 export interface CatalogGame extends GameManifest {
   allowed: boolean;
   defaultConfig: GameConfigBody;
+  meta: CatalogEntry | null;
+  favorite: boolean;
 }
 
 export interface GameConfig {

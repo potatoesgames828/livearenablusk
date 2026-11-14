@@ -17,6 +17,8 @@ export async function createApp(): Promise<NestExpressApplication> {
   app.set('trust proxy', process.env.TRUST_PROXY ?? 'loopback, uniquelocal');
   app.disable('x-powered-by');
   app.useBodyParser('json', { limit: '256kb' });
+  // Upload de sons (soundboard): corpo binário de até ~1 MB; o formato é validado pelo conteúdo.
+  app.useBodyParser('raw', { type: ['audio/*', 'application/octet-stream'], limit: '1100kb' });
   app.use(cookieParser());
   app.use(
     helmet({

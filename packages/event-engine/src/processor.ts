@@ -8,6 +8,7 @@ import type {
   ViewerSignalMessage,
 } from '@live-arena/shared';
 import type { EventStore } from './store';
+import type { MatchContext } from './rules';
 import { computeGiftDelta } from './gift-streak';
 import { matchRules, parseCommand } from './rules';
 
@@ -50,9 +51,11 @@ export interface ProcessResult {
   /** Se o evento deve ser persistido no histórico. */
   persist: boolean;
   giftDelta?: number;
+  /** Contexto usado para casar regras (reaproveitado pelos alertas). */
+  matchContext?: MatchContext;
 }
 
-const PERSISTED_TYPES = new Set(['GIFT', 'FOLLOW', 'SHARE', 'SUBSCRIPTION', 'STREAM_START', 'STREAM_END', 'SYSTEM_WARNING', 'SYSTEM_ERROR', 'BATTLE', 'LIKE']);
+const PERSISTED_TYPES = new Set(['GIFT', 'FOLLOW', 'SHARE', 'SUBSCRIPTION', 'STREAM_START', 'STREAM_END', 'SYSTEM_WARNING', 'SYSTEM_ERROR', 'BATTLE', 'LIKE', 'CUSTOM']);
 
 function viewerOf(event: LiveEvent): GameActionMessage['viewer'] {
   if (!event.user) return undefined;
@@ -79,7 +82,7 @@ export async function processEvent(event: LiveEvent, opts: ProcessOptions): Prom
   if (!first) return { ...base, status: 'DUPLICATE' };
 
   // 2) Contadores e contexto específico do tipo.
-  const ctx: { giftDelta?: number; likesBefore?: number; likesAfter?: number } = {};
+  const ctx: MatchContext = {};
   const inc: Record<string, number> = { events: 1 };
   switch (event.type) {
     case 'GIFT': {
@@ -122,11 +125,13 @@ export async function processEvent(event: LiveEvent, opts: ProcessOptions): Prom
   }
   if (event.type === 'ROOM_USER') {
     const vc = Number((event.payload as { viewerCount?: number }).viewerCount ?? 0);
+    ctx.viewersBefore = Number(counters.viewers ?? 0);
+    ctx.viewersAfter = vc;
     await store.hset(keys.counters(event.sessionId), { viewers: vc });
     counters.viewers = vc;
   }
 
-  const result: ProcessResult = { ...base, counters, giftDelta: ctx.giftDelta, persist: PERSISTED_TYPES.has(event.type) };
+  const result: ProcessResult = { ...base, counters, giftDelta: ctx.giftDelta, persist: PERSISTED_TYPES.has(event.type), matchContext: ctx };
 
   // Atualização intermediária de sequência sem unidades novas: nada a fazer.
   if (event.type === 'GIFT' && (ctx.giftDelta ?? 0) <= 0) {

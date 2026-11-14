@@ -7,11 +7,13 @@ export async function seedBaseData(): Promise<void> {
   const prisma = getPrisma();
   let order = 0;
   for (const plan of DEFAULT_PLANS) {
+    const existing = await prisma.subscriptionPlan.findUnique({ where: { code: plan.code } });
+    // Não sobrescreve limites já editados por administradores: só acrescenta chaves novas.
+    const merged = existing ? { ...plan.limits, ...(existing.limits as Record<string, unknown>) } : plan.limits;
     await prisma.subscriptionPlan.upsert({
       where: { code: plan.code },
       create: { code: plan.code, name: plan.name, priceCents: plan.priceCents, limits: toJson(plan.limits), sortOrder: order++ },
-      // Não sobrescreve limites já editados por administradores.
-      update: { name: plan.name },
+      update: { name: plan.name, limits: toJson(merged) },
     });
   }
   for (const g of GAME_CATALOG) {

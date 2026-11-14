@@ -15,6 +15,7 @@ export const LIVE_EVENT_TYPES = [
   'BATTLE',
   'SYSTEM_WARNING',
   'SYSTEM_ERROR',
+  'CUSTOM',
 ] as const;
 export type LiveEventType = (typeof LIVE_EVENT_TYPES)[number];
 
@@ -36,6 +37,7 @@ export const EVENT_PRIORITY: Record<LiveEventType, number> = {
   LIKE: 7,
   MEMBER: 8,
   ROOM_USER: 9,
+  CUSTOM: 5,
 };
 
 /** Eventos que podem ser descartados sob sobrecarga (backpressure). */
@@ -94,6 +96,12 @@ export const roomUserPayloadSchema = z.object({
   viewerCount: z.number().int().min(0),
 });
 
+export const customPayloadSchema = z.object({
+  name: z.string().min(1).max(40).regex(/^[a-z0-9_.-]+$/i),
+  value: z.number().optional(),
+  text: z.string().max(200).optional(),
+});
+
 export const systemPayloadSchema = z.object({
   code: z.string().max(64),
   message: z.string().max(1000),
@@ -134,7 +142,9 @@ export function validateEventPayload(type: LiveEventType, payload: unknown): str
           ? chatPayloadSchema
           : type === 'ROOM_USER'
             ? roomUserPayloadSchema
-            : type === 'SYSTEM_ERROR' || type === 'SYSTEM_WARNING'
+            : type === 'CUSTOM'
+              ? customPayloadSchema
+              : type === 'SYSTEM_ERROR' || type === 'SYSTEM_WARNING'
               ? systemPayloadSchema
               : genericPayloadSchema;
   const res = schema.safeParse(payload);

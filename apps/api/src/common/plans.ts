@@ -12,7 +12,7 @@ export class PlanService {
     const t = await this.infra.prisma.tenant.findUnique({ where: { id: tenantId }, include: { plan: true } });
     if (!t) throw Errors.notFound();
     const parsed = planLimitsSchema.safeParse(t.plan.limits);
-    const fallback = DEFAULT_PLANS.find((p) => p.code === 'free')!.limits;
+    const fallback = planLimitsSchema.parse(DEFAULT_PLANS.find((p) => p.code === 'free')!.limits);
     return { code: t.plan.code, name: t.plan.name, limits: parsed.success ? parsed.data : fallback };
   }
 

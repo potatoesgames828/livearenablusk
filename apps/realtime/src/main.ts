@@ -89,7 +89,9 @@ async function main(): Promise<void> {
         const [, overlayId, sessionId] = claims.sub.split(':');
         if (!overlayId || !sessionId) return next(new Error('AUTH_REQUIRED'));
         const o = await prisma.overlay.findUnique({ where: { id: overlayId } });
-        if (!o || o.revokedAt || o.sessionId !== sessionId || o.tenantId !== claims.tid) return next(new Error('AUTH_REQUIRED'));
+        // Overlay do usuário ("*"): pode assinar qualquer LIVE do próprio tenant (troca de LIVE sem reconfigurar o OBS).
+        const userOverlay = sessionId === '*' && o?.kind === 'USER';
+        if (!o || o.revokedAt || o.tenantId !== claims.tid || (!userOverlay && o.sessionId !== sessionId)) return next(new Error('AUTH_REQUIRED'));
         data.kind = 'overlay';
         data.overlayId = overlayId;
         data.overlaySessionId = sessionId;
@@ -121,7 +123,12 @@ async function main(): Promise<void> {
       if (!allowMessage(socket)) return ack?.({ ok: false, error: 'RATE_LIMITED' });
       if (typeof sessionId !== 'string' || sessionId.length > 64) return ack?.({ ok: false, error: 'VALIDATION' });
       // Overlay só pode assinar a própria sessão; painel só sessões do próprio tenant.
-      if (d.kind === 'overlay' && sessionId !== d.overlaySessionId) return ack?.({ ok: false, error: 'FORBIDDEN' });
+      if (d.kind === 'overlay' && d.overlaySessionId !== '*' && sessionId !== d.overlaySessionId) return ack?.({ ok: false, error: 'FORBIDDEN' });
+      // Overlay do usuário acompanha uma LIVE por vez.
+      if (d.kind === 'overlay' && d.overlaySessionId === '*') {
+        for (const r of d.rooms) void socket.leave(r);
+        d.rooms.clear();
+      }
       if (!(await sessionBelongs(d.tenantId, sessionId))) return ack?.({ ok: false, error: 'FORBIDDEN' });
       if (d.rooms.size >= MAX_SUBSCRIPTIONS) return ack?.({ ok: false, error: 'LIMIT' });
       const room = roomFor(d.tenantId, sessionId);

@@ -14,12 +14,16 @@ import { AutomationsModule } from './modules/automations.module';
 import { StatsModule } from './modules/stats.module';
 import { AdminModule } from './modules/admin.module';
 import { HealthModule } from './modules/health.module';
+import { MediaModule } from './modules/media.module';
+import { AccountModule } from './modules/account.module';
 
 @Module({
   imports: [
     InfraModule,
     AuthModule,
     GamesModule,
+    MediaModule,
+    AccountModule,
     ConnectionsModule,
     SessionsModule,
     OverlaysModule,

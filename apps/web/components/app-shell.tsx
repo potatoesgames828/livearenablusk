@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   LayoutDashboard, Radio, Gamepad2, Workflow, ListTree, MonitorPlay, BarChart3, Trophy, Settings, LifeBuoy, LogOut, MoreHorizontal, Shield, X, ChevronsLeft, ChevronsRight,
+  SlidersHorizontal, History, Music, Bell, CreditCard,
 } from 'lucide-react';
 import { BRAND } from '@live-arena/shared';
 import { Logo } from './brand';
@@ -12,20 +13,25 @@ import { Spinner } from './ui';
 import { api, refreshSession, useAuth } from '@/lib/api';
 
 const NAV = [
-  { href: '/painel', label: 'Visão geral', icon: LayoutDashboard, exact: true },
-  { href: '/painel/lives', label: 'Minhas LIVES', icon: Radio },
-  { href: '/painel/jogos', label: 'Central de jogos', icon: Gamepad2 },
-  { href: '/painel/automacoes', label: 'Automações', icon: Workflow },
-  { href: '/painel/eventos', label: 'Eventos', icon: ListTree },
-  { href: '/painel/overlays', label: 'Overlays', icon: MonitorPlay },
+  { href: '/painel', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+  { href: '/painel/jogos', label: 'Biblioteca de jogos', icon: Gamepad2 },
+  { href: '/painel/lives', label: 'Minha transmissão', icon: Radio },
+  { href: '/painel/mapeamento', label: 'Configuração de eventos', icon: SlidersHorizontal },
+  { href: '/painel/overlays', label: 'Overlay', icon: MonitorPlay },
   { href: '/painel/estatisticas', label: 'Estatísticas', icon: BarChart3 },
+  { href: '/painel/historico', label: 'Histórico', icon: History },
+  { href: '/painel/sons', label: 'Soundboard', icon: Music },
+  { href: '/painel/alertas', label: 'Alertas', icon: Bell },
+  { href: '/painel/automacoes', label: 'Automações', icon: Workflow },
   { href: '/painel/ranking', label: 'Ranking', icon: Trophy },
-  { href: '/painel/configuracoes', label: 'Configurações', icon: Settings },
-  { href: '/painel/ajuda', label: 'Ajuda', icon: LifeBuoy },
+  { href: '/painel/eventos', label: 'Feed de eventos', icon: ListTree },
+  { href: '/painel/configuracoes', label: 'Conta', icon: Settings },
+  { href: '/painel/assinatura', label: 'Assinatura', icon: CreditCard },
+  { href: '/painel/ajuda', label: 'Central de ajuda', icon: LifeBuoy },
 ];
 // No celular: 4 atalhos principais + "Mais".
-const MOBILE_PRIMARY = ['/painel', '/painel/lives', '/painel/jogos', '/painel/eventos'];
-const MOBILE_LABELS: Record<string, string> = { '/painel': 'Início', '/painel/lives': 'LIVES', '/painel/jogos': 'Jogos', '/painel/eventos': 'Eventos' };
+const MOBILE_PRIMARY = ['/painel', '/painel/lives', '/painel/jogos', '/painel/overlays'];
+const MOBILE_LABELS: Record<string, string> = { '/painel': 'Início', '/painel/lives': 'LIVE', '/painel/jogos': 'Jogos', '/painel/overlays': 'Overlay' };
 
 function useActive() {
   const path = usePathname();
