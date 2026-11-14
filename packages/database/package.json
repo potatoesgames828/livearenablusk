@@ -11,10 +11,14 @@
     "migrate:deploy": "prisma migrate deploy",
     "seed": "node dist/seed.js"
   },
-  "prisma": { "schema": "prisma/schema.prisma" },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  },
   "dependencies": {
     "@live-arena/shared": "workspace:*",
-    "@prisma/client": "6.19.0"
+    "@prisma/client": "6.19.3"
   },
-  "devDependencies": { "prisma": "6.19.0" }
+  "devDependencies": {
+    "prisma": "6.19.3"
+  }
 }

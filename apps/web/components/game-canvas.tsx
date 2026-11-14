@@ -51,7 +51,7 @@ export function GameCanvas({
       },
     });
     return () => stage.stop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Criado uma única vez: opções iniciais; mudanças de som são aplicadas no efeito abaixo.
   }, []);
 
   useEffect(() => {

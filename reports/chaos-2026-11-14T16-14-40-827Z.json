@@ -1,13 +1,13 @@
 {
-  "at": "2026-11-14T15:15:55.475Z",
+  "at": "2026-11-14T16:14:40.827Z",
   "results": [
     {
       "name": "1. Falha simulada no runner (injeção) → recuperação do checkpoint",
       "ok": true,
-      "durationMs": 2524,
-      "recoveryMs": 11,
-      "simTimeBefore": 3.467,
-      "simTimeAfter": 6,
+      "durationMs": 2518,
+      "recoveryMs": 5,
+      "simTimeBefore": 3.333,
+      "simTimeAfter": 5.867,
       "waveBefore": 1,
       "waveAfter": 1,
       "continuity": true
@@ -15,18 +15,18 @@
     {
       "name": "2. SIGKILL no processo game-runner → failover após expirar o lease",
       "ok": true,
-      "durationMs": 9535,
-      "killedPid": "4829",
-      "recoveryMs": 7008,
-      "simTimeBefore": 7.667,
-      "simTimeAfter": 7.9,
-      "progressLostSec": "6.8"
+      "durationMs": 9029,
+      "killedPid": "18845",
+      "recoveryMs": 6511,
+      "simTimeBefore": 7.467,
+      "simTimeAfter": 7.7,
+      "progressLostSec": "6.3"
     },
     {
       "name": "3. Queda da fonte de eventos (injeção) → reconexão automática",
       "ok": true,
-      "durationMs": 8235,
-      "recoveryMs": 8222,
+      "durationMs": 8243,
+      "recoveryMs": 8230,
       "statesSeen": [
         "RECONNECTING",
         "CONNECTING",
@@ -37,44 +37,44 @@
     {
       "name": "4. SIGKILL no worker durante rajada de eventos → nenhum presente perdido",
       "ok": true,
-      "durationMs": 4231,
-      "killedPid": "4828",
+      "durationMs": 4202,
+      "killedPid": "18839",
       "processed": 200,
       "expected": 200,
-      "ms": 3353
+      "ms": 3335
     },
     {
       "name": "5. Eventos duplicados (mesmo msgId reenviado) são ignorados",
       "ok": true,
-      "durationMs": 4024,
+      "durationMs": 4020,
       "credited": 10,
       "expected": 10
     },
     {
-      "name": "6. Reinício do Redis (sem persistência) → sessões reinscritas e estado restaurado do PostgreSQL",
+      "name": "6. Reinício do Redis (sem persistência) → jogo continua e índices são reconstruídos a partir do PostgreSQL",
       "ok": true,
-      "durationMs": 20315,
-      "recoveryMs": 2292,
-      "simTimeBefore": 40.367,
-      "simTimeAfter": 44.7,
-      "note": "Redis perdeu todos os dados voláteis; watchdog reinscreveu a sessão e o runner restaurou o checkpoint do PostgreSQL."
+      "durationMs": 20055,
+      "recoveryMs": 2028,
+      "simTimeBefore": 40.167,
+      "simTimeAfter": 44.233,
+      "note": "Redis perdeu todos os dados voláteis; o runner manteve o jogo em memória, readquiriu o lease e reconstruiu o índice de sessões a partir do PostgreSQL (fonte da verdade)."
     },
     {
       "name": "7. PostgreSQL indisponível por 8s → jogo continua; API se recupera",
       "ok": true,
-      "durationMs": 12845,
+      "durationMs": 8265,
       "readinessDuringOutage": 503,
       "gameKeptPublishingDuringOutage": true,
-      "apiRecoveryMs": 4593
+      "apiRecoveryMs": 17
     },
     {
       "name": "8. Estabilidade geral durante os testes",
       "ok": true,
-      "durationMs": 4,
+      "durationMs": 6,
       "finalState": "RUNNING",
       "runnerState": "RUNNING",
       "connectorState": "CONNECTED",
-      "maxSnapshotGapMs": 5344
+      "maxSnapshotGapMs": 4980
     }
   ]
 }

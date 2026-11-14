@@ -121,19 +121,18 @@ export class Stage<S extends BaseSnapshot = BaseSnapshot> {
     this.qualityMode = opts.quality ?? 'auto';
     const sound = new SoundFx();
     sound.enabled = opts.soundEnabled ?? false;
-    const self = this;
     this.kit = {
       particles: new ParticleSystem(reducedMotion ? 150 : 600),
       sound,
       reducedMotion,
       quality: this.qualityMode === 'auto' ? 'high' : this.qualityMode,
-      shake(amount: number) {
-        if (!reducedMotion) self.shakeAmt = Math.min(40, self.shakeAmt + amount);
+      shake: (amount: number) => {
+        if (!reducedMotion) this.shakeAmt = Math.min(40, this.shakeAmt + amount);
       },
-      flash(color: string, strength = 0.35) {
-        if (reducedMotion) strength *= 0.3;
-        self.flashColor = color;
-        self.flashAlpha = Math.max(self.flashAlpha, strength);
+      flash: (color: string, strength = 0.35) => {
+        const s2 = reducedMotion ? strength * 0.3 : strength;
+        this.flashColor = color;
+        this.flashAlpha = Math.max(this.flashAlpha, s2);
       },
     };
     this.applyQuality();

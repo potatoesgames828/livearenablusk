@@ -1,0 +1,10 @@
+# Gitleaks: regras padrão + exceção restrita para credenciais FICTÍCIAS de testes
+# (contas locais efêmeras criadas pelos testes automatizados). Segredos reais
+# ficam apenas no .env (ignorado pelo git) ou no gerenciador de segredos.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fixtures de teste"
+paths = ['''^tests/''']
+regexes = ['''SenhaForte123''', '''ovl_invalido_123456''']

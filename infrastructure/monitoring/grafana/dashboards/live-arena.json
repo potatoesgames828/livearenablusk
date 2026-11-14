@@ -1,0 +1,320 @@
+{
+ "title": "LIVE ARENA \u2014 Opera\u00e7\u00e3o",
+ "uid": "live-arena-ops",
+ "schemaVersion": 39,
+ "refresh": "10s",
+ "time": {
+  "from": "now-1h",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "type": "timeseries",
+   "title": "Servi\u00e7os no ar",
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "targets": [
+    {
+     "expr": "up",
+     "legendFormat": "{{job}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Eventos recebidos/s por tipo",
+   "gridPos": {
+    "x": 12,
+    "y": 0,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "targets": [
+    {
+     "expr": "sum(rate(la_events_received_total[1m])) by (type)",
+     "legendFormat": "{{type}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Processamento p95 (s)",
+   "gridPos": {
+    "x": 0,
+    "y": 8,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s"
+    }
+   },
+   "targets": [
+    {
+     "expr": "histogram_quantile(0.95, sum(rate(la_event_processing_seconds_bucket[5m])) by (le))",
+     "legendFormat": "p95"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Eventos descartados/duplicados/s",
+   "gridPos": {
+    "x": 12,
+    "y": 8,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "targets": [
+    {
+     "expr": "sum(rate(la_events_dropped_total[5m])) by (reason) or sum(rate(la_events_duplicated_total[5m]))",
+     "legendFormat": "{{reason}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Fila de ingest\u00e3o",
+   "gridPos": {
+    "x": 0,
+    "y": 16,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "targets": [
+    {
+     "expr": "sum(la_queue_depth) by (queue,state)",
+     "legendFormat": "{{queue}} {{state}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Sess\u00f5es ativas",
+   "gridPos": {
+    "x": 12,
+    "y": 16,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "targets": [
+    {
+     "expr": "la_active_sessions",
+     "legendFormat": "{{kind}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Tick dos jogos p95 (s)",
+   "gridPos": {
+    "x": 0,
+    "y": 24,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s"
+    }
+   },
+   "targets": [
+    {
+     "expr": "histogram_quantile(0.95, sum(rate(la_runner_tick_seconds_bucket[5m])) by (le, game))",
+     "legendFormat": "{{game}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Conex\u00f5es WebSocket",
+   "gridPos": {
+    "x": 12,
+    "y": 24,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "targets": [
+    {
+     "expr": "la_realtime_connections",
+     "legendFormat": "{{kind}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Encoder: FPS",
+   "gridPos": {
+    "x": 0,
+    "y": 32,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "targets": [
+    {
+     "expr": "la_stream_fps",
+     "legendFormat": "{{session}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Encoder: bitrate (kbps)",
+   "gridPos": {
+    "x": 12,
+    "y": 32,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "targets": [
+    {
+     "expr": "la_stream_bitrate_kbps",
+     "legendFormat": "{{session}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "CPU por servi\u00e7o",
+   "gridPos": {
+    "x": 0,
+    "y": 40,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit"
+    }
+   },
+   "targets": [
+    {
+     "expr": "rate(la_process_cpu_seconds_total[1m])",
+     "legendFormat": "{{service}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Mem\u00f3ria residente",
+   "gridPos": {
+    "x": 12,
+    "y": 40,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bytes"
+    }
+   },
+   "targets": [
+    {
+     "expr": "la_process_resident_memory_bytes",
+     "legendFormat": "{{service}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Event loop lag (s)",
+   "gridPos": {
+    "x": 0,
+    "y": 48,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s"
+    }
+   },
+   "targets": [
+    {
+     "expr": "la_event_loop_lag_seconds",
+     "legendFormat": "{{service}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Reconex\u00f5es de conectores",
+   "gridPos": {
+    "x": 12,
+    "y": 48,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": "Prometheus",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "targets": [
+    {
+     "expr": "increase(la_connector_reconnections_total[15m])",
+     "legendFormat": "{{provider}}"
+    }
+   ]
+  }
+ ]
+}

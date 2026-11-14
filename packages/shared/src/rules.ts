@@ -34,7 +34,7 @@ export const eventRuleSchema = z.object({
   trigger: ruleTriggerSchema,
   /** Identificador de uma ação declarada no manifesto do jogo. */
   action: z.string().min(1).max(64),
-  params: z.record(ruleParamValueSchema).default({}),
+  params: z.record(z.string(), ruleParamValueSchema).default({}),
   /** Intervalo mínimo global entre disparos desta regra. */
   cooldownMs: z.number().int().min(0).max(3_600_000).default(0),
   /** Intervalo mínimo por espectador. */
@@ -49,7 +49,7 @@ export type EventRule = z.infer<typeof eventRuleSchema>;
 export type EventRuleInput = z.input<typeof eventRuleSchema>;
 
 export const gameConfigBodySchema = z.object({
-  settings: z.record(ruleParamValueSchema).default({}),
+  settings: z.record(z.string(), ruleParamValueSchema).default({}),
   rules: z.array(eventRuleSchema).max(100).default([]),
   autoMode: z.boolean().default(true),
   /** 'vertical' (9:16) ou 'horizontal' (16:9) */
@@ -61,7 +61,8 @@ export const gameConfigBodySchema = z.object({
       secondary: z.string().regex(/^#[0-9a-f]{6}$/i).default('#8b5cf6'),
       background: z.string().regex(/^#[0-9a-f]{6}$/i).default('#070b17'),
     })
-    .default({}),
+    // Zod 4: prefault aplica os padrões internos quando o tema não é enviado.
+    .prefault({}),
 });
 export type GameConfigBody = z.infer<typeof gameConfigBodySchema>;
 

@@ -1,3 +1,6 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 /** @type {import('next').NextConfig} */
 const API_INTERNAL_URL = process.env.API_INTERNAL_URL ?? 'http://127.0.0.1:4000';
 const REALTIME_PUBLIC = process.env.NEXT_PUBLIC_REALTIME_URL ?? 'http://localhost:4001';
@@ -23,6 +26,8 @@ const csp = [
 
 const nextConfig = {
   output: 'standalone',
+  // Raiz do monorepo: o build standalone inclui os pacotes internos.
+  outputFileTracingRoot: path.join(path.dirname(fileURLToPath(import.meta.url)), '../../'),
   reactStrictMode: true,
   poweredByHeader: false,
   transpilePackages: ['@live-arena/shared', '@live-arena/game-engine', '@live-arena/games', '@live-arena/automation'],

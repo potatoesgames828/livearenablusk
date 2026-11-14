@@ -99,7 +99,7 @@ export const systemPayloadSchema = z.object({
   message: z.string().max(1000),
 });
 
-export const genericPayloadSchema = z.record(z.unknown());
+export const genericPayloadSchema = z.record(z.string(), z.unknown());
 
 export const liveEventSchema = z.object({
   eventId: z.string().min(8).max(128),

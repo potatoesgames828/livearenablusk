@@ -1,0 +1,47 @@
+groups:
+  - name: live-arena
+    rules:
+      - alert: ServicoFora
+        expr: up == 0
+        for: 1m
+        labels: { severity: critical }
+        annotations: { summary: 'Serviço {{ $labels.job }} ({{ $labels.instance }}) não responde' }
+      - alert: FilaDeIngestaoAcumulando
+        expr: sum(la_queue_depth{queue="events-ingest",state=~"waiting|prioritized"}) > 5000
+        for: 2m
+        labels: { severity: warning }
+        annotations: { summary: 'Fila de eventos com {{ $value }} itens aguardando — escale o worker' }
+      - alert: EventosDescartados
+        expr: sum(rate(la_events_dropped_total[5m])) > 5
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: 'Eventos sendo descartados por sobrecarga/limite' }
+      - alert: ProcessamentoLento
+        expr: histogram_quantile(0.95, sum(rate(la_event_processing_seconds_bucket[5m])) by (le)) > 0.5
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: 'p95 de processamento de eventos acima de 500ms' }
+      - alert: TickDoJogoLento
+        expr: histogram_quantile(0.95, sum(rate(la_runner_tick_seconds_bucket[5m])) by (le)) > 0.02
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: 'Jogos com tick lento — game-runner sobrecarregado' }
+      - alert: EncoderAbaixoDoFPS
+        expr: la_stream_fps < 20
+        for: 2m
+        labels: { severity: critical }
+        annotations: { summary: 'Encoder da sessão {{ $labels.session }} com {{ $value }} fps' }
+      - alert: EventLoopTravando
+        expr: la_event_loop_lag_seconds > 0.5
+        for: 2m
+        labels: { severity: warning }
+        annotations: { summary: 'Event loop de {{ $labels.service }} com atraso de {{ $value }}s' }
+      - alert: ErrosElevados
+        expr: sum(rate(la_errors_total[5m])) by (component) > 1
+        for: 5m
+        labels: { severity: warning }
+        annotations: { summary: 'Erros elevados em {{ $labels.component }}' }
+      - alert: ReconexoesFrequentes
+        expr: sum(increase(la_connector_reconnections_total[15m])) > 20
+        labels: { severity: warning }
+        annotations: { summary: 'Muitas reconexões de fontes de eventos (instabilidade externa?)' }

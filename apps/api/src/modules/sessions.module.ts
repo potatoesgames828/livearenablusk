@@ -31,7 +31,7 @@ const createSchema = z.object({
 const updateSchema = createSchema.partial();
 const controlSchema = z.object({
   command: z.enum(CONTROL_COMMANDS),
-  args: z.record(z.unknown()).optional(),
+  args: z.record(z.string(), z.unknown()).optional(),
 });
 const simulateSchema = z.object({
   type: z.enum(['GIFT', 'LIKE', 'CHAT', 'FOLLOW', 'SHARE', 'MEMBER', 'SUBSCRIPTION', 'ROOM_USER']),
