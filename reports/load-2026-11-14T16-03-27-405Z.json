@@ -1,0 +1,207 @@
+{
+  "at": "2026-11-14T16:03:27.406Z",
+  "host": {
+    "cpus": "4",
+    "memGb": "15"
+  },
+  "results": [
+    {
+      "sessions": 1,
+      "wsClients": 3,
+      "durationSec": 34,
+      "giftsSent": 100,
+      "giftsProcessed": 100,
+      "likesSent": 3000,
+      "likesProcessed": 3000,
+      "apiErrors": 0,
+      "e2eLatencyMs": {
+        "p50": 9,
+        "p95": 13,
+        "p99": 13,
+        "samples": 20
+      },
+      "snapshotsPerClientPerSec": 15,
+      "resources": {
+        "redis": {
+          "cpuPctAvg": 1,
+          "rssMbMax": 27
+        },
+        "postgres": {
+          "cpuPctAvg": 1,
+          "rssMbMax": 885
+        },
+        "realtime": {
+          "cpuPctAvg": 1,
+          "rssMbMax": 109
+        },
+        "worker": {
+          "cpuPctAvg": 3,
+          "rssMbMax": 139
+        },
+        "connector": {
+          "cpuPctAvg": 0,
+          "rssMbMax": 100
+        },
+        "game-runner": {
+          "cpuPctAvg": 2,
+          "rssMbMax": 136
+        },
+        "api": {
+          "cpuPctAvg": 1,
+          "rssMbMax": 230
+        },
+        "web": {
+          "cpuPctAvg": 0,
+          "rssMbMax": 148
+        },
+        "stream-manager": {
+          "cpuPctAvg": 0,
+          "rssMbMax": 146
+        }
+      },
+      "baselineRssMb": {
+        "redis": 27,
+        "postgres": 880,
+        "realtime": 109,
+        "worker": 139,
+        "connector": 100,
+        "game-runner": 135,
+        "api": 230,
+        "web": 148,
+        "stream-manager": 146
+      }
+    },
+    {
+      "sessions": 10,
+      "wsClients": 30,
+      "durationSec": 34,
+      "giftsSent": 1000,
+      "giftsProcessed": 1000,
+      "likesSent": 30000,
+      "likesProcessed": 30000,
+      "apiErrors": 0,
+      "e2eLatencyMs": {
+        "p50": 12,
+        "p95": 40,
+        "p99": 57,
+        "samples": 200
+      },
+      "snapshotsPerClientPerSec": 15,
+      "resources": {
+        "redis": {
+          "cpuPctAvg": 4,
+          "rssMbMax": 28
+        },
+        "postgres": {
+          "cpuPctAvg": 4,
+          "rssMbMax": 900
+        },
+        "realtime": {
+          "cpuPctAvg": 5,
+          "rssMbMax": 109
+        },
+        "worker": {
+          "cpuPctAvg": 17,
+          "rssMbMax": 139
+        },
+        "connector": {
+          "cpuPctAvg": 0,
+          "rssMbMax": 100
+        },
+        "game-runner": {
+          "cpuPctAvg": 9,
+          "rssMbMax": 139
+        },
+        "api": {
+          "cpuPctAvg": 5,
+          "rssMbMax": 233
+        },
+        "web": {
+          "cpuPctAvg": 0,
+          "rssMbMax": 148
+        },
+        "stream-manager": {
+          "cpuPctAvg": 0,
+          "rssMbMax": 147
+        }
+      },
+      "baselineRssMb": {
+        "redis": 27,
+        "postgres": 878,
+        "realtime": 109,
+        "worker": 139,
+        "connector": 100,
+        "game-runner": 136,
+        "api": 230,
+        "web": 148,
+        "stream-manager": 146
+      }
+    },
+    {
+      "sessions": 20,
+      "wsClients": 60,
+      "durationSec": 35,
+      "giftsSent": 2000,
+      "giftsProcessed": 2000,
+      "likesSent": 60000,
+      "likesProcessed": 60000,
+      "apiErrors": 0,
+      "e2eLatencyMs": {
+        "p50": 21,
+        "p95": 67,
+        "p99": 132,
+        "samples": 400
+      },
+      "snapshotsPerClientPerSec": 15,
+      "resources": {
+        "redis": {
+          "cpuPctAvg": 7,
+          "rssMbMax": 31
+        },
+        "postgres": {
+          "cpuPctAvg": 8,
+          "rssMbMax": 934
+        },
+        "realtime": {
+          "cpuPctAvg": 8,
+          "rssMbMax": 109
+        },
+        "worker": {
+          "cpuPctAvg": 29,
+          "rssMbMax": 138
+        },
+        "connector": {
+          "cpuPctAvg": 0,
+          "rssMbMax": 100
+        },
+        "game-runner": {
+          "cpuPctAvg": 17,
+          "rssMbMax": 132
+        },
+        "api": {
+          "cpuPctAvg": 7,
+          "rssMbMax": 232
+        },
+        "web": {
+          "cpuPctAvg": 0,
+          "rssMbMax": 148
+        },
+        "stream-manager": {
+          "cpuPctAvg": 0,
+          "rssMbMax": 147
+        }
+      },
+      "baselineRssMb": {
+        "redis": 28,
+        "postgres": 905,
+        "realtime": 109,
+        "worker": 113,
+        "connector": 100,
+        "game-runner": 112,
+        "api": 225,
+        "web": 148,
+        "stream-manager": 147
+      }
+    }
+  ]
+}
