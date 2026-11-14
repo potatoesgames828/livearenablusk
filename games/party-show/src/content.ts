@@ -1,0 +1,67 @@
+/**
+ * Conteúdo original em português para o Show de Perguntas.
+ * Quiz: [pergunta, resposta certa, erradas...]. Fatos de conhecimento geral.
+ */
+export const QUIZ: Array<[string, string, string, string, string]> = [
+  ['Qual é o maior planeta do Sistema Solar?', 'Júpiter', 'Saturno', 'Terra', 'Netuno'],
+  ['Quantos lados tem um hexágono?', '6', '5', '8', '7'],
+  ['Qual é a capital do Brasil?', 'Brasília', 'Rio de Janeiro', 'São Paulo', 'Salvador'],
+  ['Qual animal é conhecido como o rei da selva?', 'Leão', 'Tigre', 'Elefante', 'Gorila'],
+  ['Quantos minutos tem uma hora?', '60', '100', '30', '90'],
+  ['Qual é o maior oceano do planeta?', 'Pacífico', 'Atlântico', 'Índico', 'Ártico'],
+  ['Qual gás as plantas absorvem do ar para fazer fotossíntese?', 'Gás carbônico', 'Oxigênio', 'Hélio', 'Nitrogênio'],
+  ['Quantas cores tem o arco-íris (na divisão tradicional)?', '7', '5', '6', '9'],
+  ['Qual é o menor número primo?', '2', '1', '3', '0'],
+  ['Em que continente fica o Egito?', 'África', 'Ásia', 'Europa', 'Oceania'],
+  ['Qual é o resultado de 7 × 8?', '56', '54', '64', '48'],
+  ['Qual planeta é conhecido como planeta vermelho?', 'Marte', 'Vênus', 'Mercúrio', 'Júpiter'],
+  ['Quantas patas tem uma aranha?', '8', '6', '10', '4'],
+  ['Qual é o maior país da América do Sul em área?', 'Brasil', 'Argentina', 'Peru', 'Colômbia'],
+  ['A água ferve a quantos graus Celsius ao nível do mar?', '100', '90', '120', '80'],
+  ['Qual destes é um mamífero?', 'Golfinho', 'Tubarão', 'Pinguim', 'Polvo'],
+  ['Quantos dias tem um ano bissexto?', '366', '365', '364', '360'],
+  ['Qual é o idioma oficial de Portugal?', 'Português', 'Espanhol', 'Francês', 'Italiano'],
+  ['Qual é o osso mais longo do corpo humano?', 'Fêmur', 'Tíbia', 'Úmero', 'Rádio'],
+  ['Quantos jogadores de cada time ficam em campo no futebol?', '11', '10', '9', '12'],
+  ['Qual é a estrela mais próxima da Terra?', 'Sol', 'Sirius', 'Alfa Centauri', 'Polaris'],
+  ['Qual instrumento tem teclas brancas e pretas?', 'Piano', 'Violão', 'Bateria', 'Flauta'],
+  ['Qual é a metade de 250?', '125', '120', '150', '115'],
+  ['Qual fruta é tradicionalmente usada para fazer guacamole?', 'Abacate', 'Manga', 'Limão', 'Banana'],
+  ['O que a abelha produz?', 'Mel', 'Leite', 'Seda', 'Cera de carnaúba'],
+  ['Qual é o símbolo químico da água?', 'H2O', 'CO2', 'O2', 'NaCl'],
+  ['Quantos segundos tem um minuto?', '60', '100', '30', '120'],
+  ['Qual é o maior animal do mundo?', 'Baleia-azul', 'Elefante-africano', 'Girafa', 'Tubarão-branco'],
+  ['Qual destes NÃO é um planeta do Sistema Solar?', 'Lua', 'Vênus', 'Urano', 'Saturno'],
+  ['Qual é o país com a maior população do mundo (estimativas da ONU, 2023 em diante)?', 'Índia', 'China', 'Estados Unidos', 'Indonésia'],
+  ['Em qual estação do ano as folhas costumam cair?', 'Outono', 'Primavera', 'Verão', 'Inverno'],
+  ['Quantos centímetros tem um metro?', '100', '10', '1000', '50'],
+  ['Qual é a cor resultante da mistura de azul e amarelo?', 'Verde', 'Roxo', 'Laranja', 'Marrom'],
+  ['Qual órgão bombeia o sangue pelo corpo?', 'Coração', 'Pulmão', 'Fígado', 'Rim'],
+  ['Qual é o rio mais extenso que corta o território brasileiro?', 'Amazonas', 'São Francisco', 'Paraná', 'Tocantins'],
+  ['Quantos zeros tem um milhão?', '6', '5', '7', '9'],
+  ['Qual destes animais põe ovos?', 'Galinha', 'Vaca', 'Cachorro', 'Cavalo'],
+  ['Qual é o resultado de 15 + 27?', '42', '41', '43', '32'],
+  ['Qual destes é um meio de transporte aquático?', 'Barco', 'Trem', 'Avião', 'Ônibus'],
+  ['Qual é o satélite natural da Terra?', 'Lua', 'Fobos', 'Titã', 'Europa'],
+];
+
+export const POLLS: Array<[string, ...string[]]> = [
+  ['Você prefere…', 'Praia', 'Montanha'],
+  ['Melhor sabor de pizza?', 'Calabresa', 'Mussarela', 'Frango com catupiry', 'Portuguesa'],
+  ['Time do dia: você é…', 'Matutino', 'Noturno'],
+  ['Qual superpoder você escolheria?', 'Voar', 'Ficar invisível', 'Teletransporte', 'Ler mentes'],
+  ['Você prefere…', 'Cachorro', 'Gato'],
+  ['Melhor refeição do dia?', 'Café da manhã', 'Almoço', 'Jantar'],
+  ['Para assistir hoje:', 'Filme de terror', 'Comédia', 'Ação', 'Romance'],
+  ['Você prefere…', 'Doce', 'Salgado'],
+  ['Qual próximo jogo da LIVE?', 'Corrida', 'Batalha', 'Quiz', 'Torres'],
+  ['Viagem dos sonhos:', 'Japão', 'Itália', 'Nordeste brasileiro', 'Canadá'],
+  ['Você prefere…', 'Verão', 'Inverno'],
+  ['Melhor acompanhamento:', 'Batata frita', 'Arroz e feijão', 'Salada', 'Farofa'],
+];
+
+export const WORDS: string[] = [
+  'abacaxi', 'girassol', 'foguete', 'janela', 'borboleta', 'chocolate', 'travesseiro', 'computador', 'bicicleta', 'cachoeira',
+  'guitarra', 'pipoca', 'tartaruga', 'elefante', 'arcoiris', 'dinossauro', 'sorvete', 'futebol', 'castelo', 'relogio',
+  'planeta', 'cenoura', 'camelo', 'tesoura', 'maracuja', 'brigadeiro', 'jacare', 'girafa', 'telefone', 'mochila',
+];

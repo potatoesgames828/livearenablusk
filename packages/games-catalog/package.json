@@ -29,6 +29,7 @@
     "@live-arena/game-tug-of-war": "workspace:*",
     "@live-arena/game-tower-war": "workspace:*",
     "@live-arena/game-slap-arena": "workspace:*",
-    "@live-arena/game-animal-race": "workspace:*"
+    "@live-arena/game-animal-race": "workspace:*",
+    "@live-arena/game-party-show": "workspace:*"
   }
 }

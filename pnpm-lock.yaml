@@ -396,6 +396,15 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
 
+  games/party-show:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
   games/plinko-live:
     dependencies:
       '@live-arena/game-engine':
@@ -504,6 +513,9 @@ importers:
       '@live-arena/game-melon-pop':
         specifier: workspace:*
         version: link:../../games/melon-pop
+      '@live-arena/game-party-show':
+        specifier: workspace:*
+        version: link:../../games/party-show
       '@live-arena/game-plinko-live':
         specifier: workspace:*
         version: link:../../games/plinko-live
