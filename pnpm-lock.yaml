@@ -414,6 +414,15 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
 
+  games/tower-war:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
   games/tug-of-war:
     dependencies:
       '@live-arena/game-engine':
@@ -483,6 +492,9 @@ importers:
       '@live-arena/game-survival-arena':
         specifier: workspace:*
         version: link:../../games/survival-arena
+      '@live-arena/game-tower-war':
+        specifier: workspace:*
+        version: link:../../games/tower-war
       '@live-arena/game-tug-of-war':
         specifier: workspace:*
         version: link:../../games/tug-of-war

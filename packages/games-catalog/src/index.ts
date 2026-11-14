@@ -6,6 +6,7 @@ import { gameModule as plinko } from '@live-arena/game-plinko-live';
 import { gameModule as survival } from '@live-arena/game-survival-arena';
 import { gameModule as melonPop } from '@live-arena/game-melon-pop';
 import { gameModule as tugOfWar } from '@live-arena/game-tug-of-war';
+import { gameModule as towerWar } from '@live-arena/game-tower-war';
 
 /** Registro central de jogos disponíveis (lado servidor / simulação). */
 export const GAME_MODULES: Record<string, GameModule> = {
@@ -14,6 +15,7 @@ export const GAME_MODULES: Record<string, GameModule> = {
   [race.manifest.id]: race,
   [plinko.manifest.id]: plinko,
   [survival.manifest.id]: survival,
+  [towerWar.manifest.id]: towerWar,
   [tugOfWar.manifest.id]: tugOfWar,
   [melonPop.manifest.id]: melonPop,
 };

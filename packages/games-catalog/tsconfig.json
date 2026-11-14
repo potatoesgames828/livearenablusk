@@ -7,6 +7,7 @@
     { "path": "../shared" }, { "path": "../game-engine" },
     { "path": "../../games/snake-live" }, { "path": "../../games/battle-arena" }, { "path": "../../games/avatar-race" },
     { "path": "../../games/plinko-live" }, { "path": "../../games/survival-arena" },
+    { "path": "../../games/tower-war" },
     { "path": "../../games/tug-of-war" },
     { "path": "../../games/melon-pop" }
   ]
