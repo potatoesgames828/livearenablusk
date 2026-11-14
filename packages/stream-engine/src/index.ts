@@ -66,8 +66,12 @@ export function buildFfmpegArgs(input: EncoderInput, output: EncoderOutput, s: E
     '-g', String(gop), '-keyint_min', String(gop), '-sc_threshold', '0',
     '-c:a', 'aac', '-b:a', `${s.audioBitrateKbps}k`, '-ar', '44100',
   );
+  // O áudio silencioso é infinito: termina junto com o vídeo.
+  args.push('-shortest');
   const isNetwork = /^rtmps?:\/\//i.test(output.target);
   if (isNetwork || output.target.endsWith('.flv')) args.push('-f', 'flv');
+  // MP4 fragmentado: o arquivo continua reproduzível mesmo se o processo morrer.
+  else if (output.target.endsWith('.mp4')) args.push('-movflags', '+frag_keyframe+empty_moov+default_base_moof');
   if (!isNetwork) args.push('-y');
   args.push(output.target);
   return args;

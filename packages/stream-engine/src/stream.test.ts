@@ -13,6 +13,8 @@ describe('stream-engine', () => {
   it('arquivo local usa -y', () => {
     const args = buildFfmpegArgs({ kind: 'testsrc', fps: 30 }, { target: '/tmp/out.mp4' }, QUALITY_PROFILES[3]!);
     expect(args).toContain('-y');
+    expect(args).toContain('-shortest');
+    expect(args.join(' ')).toContain('frag_keyframe');
   });
   it('lê progresso do ffmpeg', () => {
     const parser = new ProgressParser();

@@ -130,6 +130,7 @@ export class StreamPipeline {
   }
 
   private async onProgress(p: EncoderProgress): Promise<void> {
+    if (this.stopped) return; // durante o encerramento o FPS cai naturalmente
     this.lastProgress = p;
     if (p.fps !== undefined) metrics.streamFps.set({ session: this.sessionId }, p.fps);
     if (p.bitrateKbps !== undefined) metrics.streamBitrate.set({ session: this.sessionId }, p.bitrateKbps);
@@ -196,12 +197,15 @@ export class StreamPipeline {
       // Fecha o stdin para o FFmpeg finalizar o arquivo/stream corretamente.
       ff.stdin.end();
       await new Promise<void>((resolve) => {
-        const t = setTimeout(() => {
+        // SIGINT faz o FFmpeg finalizar o arquivo/stream; SIGKILL só como último recurso.
+        const soft = setTimeout(() => ff.kill('SIGINT'), 3000);
+        const hard = setTimeout(() => {
           ff.kill('SIGKILL');
           resolve();
-        }, 8000);
+        }, 10_000);
         ff.once('exit', () => {
-          clearTimeout(t);
+          clearTimeout(soft);
+          clearTimeout(hard);
           resolve();
         });
       });
