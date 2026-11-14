@@ -1,0 +1,503 @@
+// LIVE ARENA — modelo de dados multi-tenant.
+// Regra: todo registro de negócio possui tenantId e todas as consultas
+// de aplicação filtram por ele (ver packages/database/src/tenant.ts).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlatformRole {
+  USER
+  OPERATOR
+  ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum TenantRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum ConnectorProvider {
+  SIMULATOR
+  TIKTOK_TTLC
+  EULER_STREAM
+}
+
+enum StreamMode {
+  OBS
+  RTMP
+  RECORD
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum LeaderboardVisibility {
+  PUBLIC_NAMES
+  ANONYMIZED
+  HIDDEN
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String
+  passwordHash  String
+  platformRole  PlatformRole  @default(USER)
+  status        AccountStatus @default(ACTIVE)
+  mfaEnabled    Boolean       @default(false)
+  mfaSecretEnc  String?
+  emailVerified Boolean       @default(false)
+  lastLoginAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  memberships    Membership[]
+  refreshTokens  RefreshToken[]
+  resetTokens    PasswordResetToken[]
+  auditLogs      AuditLog[]       @relation("AuditActor")
+}
+
+model Tenant {
+  id                 String   @id @default(cuid())
+  name               String
+  slug               String   @unique
+  planCode           String   @default("free")
+  status             AccountStatus @default(ACTIVE)
+  eventRetentionDays Int      @default(7)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  plan            SubscriptionPlan     @relation(fields: [planCode], references: [code])
+  memberships     Membership[]
+  connections     LiveConnection[]
+  gameConfigs     GameConfiguration[]
+  sessions        LiveSession[]
+  overlays        Overlay[]
+  streamConfigs   StreamConfiguration[]
+  viewers         Viewer[]
+  automations     Automation[]
+  leaderboard     Leaderboard?
+}
+
+model Membership {
+  id        String     @id @default(cuid())
+  userId    String
+  tenantId  String
+  role      TenantRole @default(OWNER)
+  createdAt DateTime   @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tenantId])
+  @@index([tenantId])
+}
+
+model RefreshToken {
+  id           String    @id @default(cuid())
+  userId       String
+  tenantId     String
+  tokenHash    String    @unique
+  familyId     String
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  userAgent    String?
+  ip           String?
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model SubscriptionPlan {
+  code       String   @id
+  name       String
+  priceCents Int      @default(0)
+  limits     Json
+  active     Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  tenants Tenant[]
+}
+
+model LiveConnection {
+  id             String            @id @default(cuid())
+  tenantId       String
+  label          String
+  provider       ConnectorProvider @default(SIMULATOR)
+  tiktokUsername String?
+  credentialsEnc String?
+  config         Json              @default("{}")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  tenant   Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions LiveSession[]
+
+  @@index([tenantId])
+}
+
+model Game {
+  id          String  @id
+  name        String
+  description String
+  enabled     Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  configs GameConfiguration[]
+}
+
+model GameConfiguration {
+  id        String   @id @default(cuid())
+  tenantId  String
+  gameId    String
+  name      String
+  body      Json
+  isPreset  Boolean  @default(false)
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant   Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  game     Game          @relation(fields: [gameId], references: [id])
+  sessions LiveSession[]
+
+  @@index([tenantId, gameId])
+}
+
+model LiveSession {
+  id              String    @id @default(cuid())
+  tenantId        String
+  name            String
+  connectionId    String?
+  gameConfigId    String
+  streamConfigId  String?
+  state           String    @default("IDLE")
+  connectorState  String    @default("DISABLED")
+  runnerState     String    @default("IDLE")
+  streamState     String    @default("NOT_CONFIGURED")
+  demo            Boolean   @default(true)
+  autoMode        Boolean   @default(true)
+  lastError       String?
+  stats           Json      @default("{}")
+  startedAt       DateTime?
+  endedAt         DateTime?
+  lastHeartbeatAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tenant       Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  connection   LiveConnection?      @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  gameConfig   GameConfiguration    @relation(fields: [gameConfigId], references: [id])
+  streamConfig StreamConfiguration? @relation(fields: [streamConfigId], references: [id], onDelete: SetNull)
+  transitions  SessionTransition[]
+  checkpoint   SessionCheckpoint?
+  rounds       GameSession[]
+  events       LiveEvent[]
+  overlays     Overlay[]
+  streams      StreamProcess[]
+
+  @@index([tenantId, state])
+  @@index([state])
+}
+
+model SessionTransition {
+  id        String   @id @default(cuid())
+  tenantId  String
+  sessionId String
+  fromState String
+  toState   String
+  reason    String?
+  actorId   String?
+  createdAt DateTime @default(now())
+
+  session LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, sessionId, createdAt])
+}
+
+model SessionCheckpoint {
+  sessionId    String   @id
+  tenantId     String
+  gameId       String
+  state        Json
+  lastStreamId String?
+  version      Int      @default(1)
+  updatedAt    DateTime @updatedAt
+
+  session LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model GameSession {
+  id             String    @id @default(cuid())
+  tenantId       String
+  sessionId      String
+  gameId         String
+  round          Int
+  startedAt      DateTime  @default(now())
+  endedAt        DateTime?
+  winnerViewerId String?
+  winnerName     String?
+  summary        Json      @default("{}")
+
+  session LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, sessionId])
+}
+
+model LiveEvent {
+  id          String   @id @default(cuid())
+  tenantId    String
+  sessionId   String
+  eventId     String
+  type        String
+  source      String
+  viewerId    String?
+  viewerName  String?
+  payload     Json
+  simulated   Boolean  @default(false)
+  status      String   @default("PROCESSED")
+  actions     Int      @default(0)
+  occurredAt  DateTime
+  receivedAt  DateTime @default(now())
+
+  session LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, eventId])
+  @@index([tenantId, sessionId, occurredAt])
+  @@index([receivedAt])
+}
+
+model EventProcessing {
+  id         String   @id @default(cuid())
+  tenantId   String
+  sessionId  String
+  eventId    String
+  status     String
+  error      String?
+  attempts   Int      @default(1)
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, sessionId])
+  @@index([status, createdAt])
+}
+
+model Automation {
+  id        String    @id @default(cuid())
+  tenantId  String
+  name      String
+  enabled   Boolean   @default(true)
+  sessionId String?
+  lastRunAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  tenant Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  rules  AutomationRule[]
+
+  @@index([tenantId])
+}
+
+model AutomationRule {
+  id           String   @id @default(cuid())
+  tenantId     String
+  automationId String
+  trigger      Json
+  action       Json
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  automation Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, automationId])
+}
+
+model Overlay {
+  id          String    @id @default(cuid())
+  tenantId    String
+  sessionId   String
+  name        String
+  tokenHash   String    @unique
+  tokenPrefix String
+  revokedAt   DateTime?
+  expiresAt   DateTime?
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  tenant  Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  session LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, sessionId])
+}
+
+model StreamConfiguration {
+  id               String     @id @default(cuid())
+  tenantId         String
+  name             String
+  mode             StreamMode @default(OBS)
+  rtmpUrl          String?
+  streamKeyEnc     String?
+  streamKeyHash    String?
+  width            Int        @default(1080)
+  height           Int        @default(1920)
+  fps              Int        @default(30)
+  videoBitrateKbps Int        @default(4500)
+  audioBitrateKbps Int        @default(128)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions  LiveSession[]
+  processes StreamProcess[]
+
+  @@index([tenantId])
+}
+
+model StreamProcess {
+  id             String    @id @default(cuid())
+  tenantId       String
+  sessionId      String
+  streamConfigId String
+  status         String
+  workerId       String?
+  restarts       Int       @default(0)
+  lastStats      Json      @default("{}")
+  lastError      String?
+  startedAt      DateTime  @default(now())
+  endedAt        DateTime?
+
+  session      LiveSession         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  streamConfig StreamConfiguration @relation(fields: [streamConfigId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, sessionId])
+}
+
+model Viewer {
+  id          String   @id @default(cuid())
+  tenantId    String
+  source      String
+  externalId  String
+  username    String?
+  nickname    String?
+  avatarUrl   String?
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  scores ViewerScore[]
+
+  @@unique([tenantId, source, externalId])
+}
+
+model ViewerScore {
+  id             String   @id @default(cuid())
+  tenantId       String
+  viewerId       String
+  // "all" | "game:<gameId>" | "session:<sessionId>"
+  scope          String
+  score          Int      @default(0)
+  wins           Int      @default(0)
+  participations Int      @default(0)
+  giftsValue     Int      @default(0)
+  likes          Int      @default(0)
+  best           Int      @default(0)
+  updatedAt      DateTime @updatedAt
+
+  viewer Viewer @relation(fields: [viewerId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, viewerId, scope])
+  @@index([tenantId, scope, score])
+}
+
+model Leaderboard {
+  tenantId                 String                @id
+  visibility               LeaderboardVisibility @default(PUBLIC_NAMES)
+  showAvatars              Boolean               @default(false)
+  accumulateAcrossSessions Boolean               @default(true)
+  updatedAt                DateTime              @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  tenantId   String?
+  actorId    String?
+  action     String
+  targetType String?
+  targetId   String?
+  metadata   Json     @default("{}")
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@index([action, createdAt])
+}
+
+model SystemAlert {
+  id         String        @id @default(cuid())
+  tenantId   String?
+  sessionId  String?
+  severity   AlertSeverity
+  component  String
+  code       String
+  message    String
+  count      Int           @default(1)
+  resolvedAt DateTime?
+  createdAt  DateTime      @default(now())
+  lastSeenAt DateTime      @default(now())
+
+  @@index([resolvedAt, severity])
+  @@index([tenantId, createdAt])
+}
+
+model Worker {
+  id              String   @id
+  kind            String
+  hostname        String
+  pid             Int
+  version         String
+  status          String   @default("UP")
+  meta            Json     @default("{}")
+  startedAt       DateTime @default(now())
+  lastHeartbeatAt DateTime @default(now())
+
+  @@index([kind, lastHeartbeatAt])
+}

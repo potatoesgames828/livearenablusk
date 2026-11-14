@@ -1,0 +1,13 @@
+{
+  "name": "@live-arena/game-engine",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./render": { "types": "./dist/render/index.d.ts", "default": "./dist/render/index.js" }
+  },
+  "scripts": { "build": "tsc -b" },
+  "dependencies": { "@live-arena/shared": "workspace:*" }
+}

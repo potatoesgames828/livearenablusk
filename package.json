@@ -1,0 +1,51 @@
+{
+  "name": "live-arena",
+  "private": true,
+  "version": "0.1.0",
+  "description": "LIVE ARENA — plataforma SaaS de jogos interativos para TikTok LIVE",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "pnpm run build:packages && pnpm --filter \"./apps/*\" -r run build",
+    "build:packages": "tsc -b tsconfig.build.json",
+    "typecheck": "tsc -b tsconfig.build.json && pnpm --filter \"./apps/*\" -r run typecheck",
+    "db:generate": "pnpm --filter @live-arena/database run generate",
+    "db:migrate": "pnpm --filter @live-arena/database run migrate:deploy",
+    "db:migrate:dev": "pnpm --filter @live-arena/database run migrate:dev",
+    "db:seed": "pnpm --filter @live-arena/database run seed",
+    "dev": "node scripts/dev.mjs",
+    "start": "node scripts/start-all.mjs",
+    "test": "vitest run",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "vitest run --project integration",
+    "test:e2e": "playwright test --trace off",
+    "test:chaos": "node tests/chaos/run-chaos.mjs",
+    "test:load": "node tests/load/run-load.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.19.1",
+    "eslint": "9.39.1",
+    "prettier": "3.6.2",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.4",
+    "vitest": "3.2.4"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "@nestjs/core",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}
