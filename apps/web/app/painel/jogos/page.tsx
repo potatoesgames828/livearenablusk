@@ -52,7 +52,7 @@ export default function GamesPage() {
         {catalog.isLoading ? (
           <Skeleton className="h-48" />
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
             {(catalog.data ?? []).map((g) => (
               <article key={g.id} className="card flex flex-col p-4" style={{ borderTopColor: g.accent, borderTopWidth: 3 }}>
                 <div className="flex items-center justify-between">

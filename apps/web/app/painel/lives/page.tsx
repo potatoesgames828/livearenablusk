@@ -82,7 +82,7 @@ export default function LivesPage() {
       ) : (sessions.data ?? []).length === 0 ? (
         <EmptyState icon={<Radio className="size-8" />} title="Nenhuma LIVE criada" description="Crie uma LIVE para começar. Você pode testar tudo com o simulador antes de entrar ao vivo." />
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {sessions.data!.map((s) => (
             <li key={s.id} className="card flex flex-col gap-3 p-4">
               <div className="flex items-start justify-between gap-2">

@@ -17,7 +17,7 @@ function AccountTab() {
     useAuth.getState().setSession(useAuth.getState().token, me);
   };
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
       <Card title="Seus dados">
         <dl className="space-y-2 text-sm">
           <div><dt className="text-slate-400">Nome</dt><dd className="text-slate-100">{user?.name}</dd></div>
@@ -76,7 +76,7 @@ function WorkspaceTab() {
   const limits = t.plan.limits as Record<string, number | boolean | string[]>;
   const canManage = hasPerm(user, 'tenant:manage');
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
       <Card title="Espaço de trabalho">
         <div className="flex flex-col gap-3">
           <Field label="Nome" htmlFor="ws-name"><Input id="ws-name" value={name ?? t.name} onChange={(e) => setName(e.target.value)} disabled={!canManage} /></Field>

@@ -58,7 +58,7 @@ export default function AutomationsPage() {
       ) : (list.data ?? []).length === 0 ? (
         <EmptyState icon={<Workflow className="size-8" />} title="Nenhuma automação" description="Exemplo: a cada 15 minutos, alternar entre Snake Live e Plinko Live." />
       ) : (
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {list.data!.map((a) => (
             <Card key={a.id} title={a.name} subtitle={a.sessionId ? `Somente: ${sessions.data?.find((s) => s.id === a.sessionId)?.name ?? 'LIVE'}` : 'Todas as LIVES'} action={<Badge tone={a.enabled ? 'ok' : 'neutral'}>{a.enabled ? 'ativa' : 'pausada'}</Badge>}>
               <ul className="mb-3 space-y-1 text-sm text-slate-300">

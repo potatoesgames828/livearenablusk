@@ -207,11 +207,13 @@ export class Stage<S extends BaseSnapshot = BaseSnapshot> {
   resize(): void {
     const parent = this.canvas.parentElement;
     if (!parent) return;
+    // O canvas ocupa 100% do contêiner via CSS (nunca dita o layout); aqui só
+    // ajustamos a resolução interna ao tamanho real exibido.
+    this.canvas.style.width = '100%';
+    this.canvas.style.height = '100%';
     const rect = parent.getBoundingClientRect();
     this.cssW = Math.max(1, Math.floor(rect.width));
     this.cssH = Math.max(1, Math.floor(rect.height));
-    this.canvas.style.width = `${this.cssW}px`;
-    this.canvas.style.height = `${this.cssH}px`;
     this.canvas.width = Math.floor(this.cssW * this.dpr);
     this.canvas.height = Math.floor(this.cssH * this.dpr);
   }

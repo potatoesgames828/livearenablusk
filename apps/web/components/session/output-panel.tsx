@@ -133,7 +133,7 @@ function ObsTab({ overlayUrl, aspectVertical }: { overlayUrl: string | null; asp
         </p>
       </div>
       {!connected ? (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Endereço do OBS WebSocket" htmlFor="obs-url">
             <Input id="obs-url" value={url} onChange={(e) => setUrl(e.target.value)} />
           </Field>
@@ -167,7 +167,7 @@ function ObsTab({ overlayUrl, aspectVertical }: { overlayUrl: string | null; asp
             {stats && <Badge>{stats.fps.toFixed(0)} fps · CPU {stats.cpu.toFixed(0)}%</Badge>}
             {status?.active && <Badge tone={status.congestion > 0.2 ? 'warn' : 'neutral'}>Congestionamento {(status.congestion * 100).toFixed(0)}% · quadros perdidos {status.skipped}</Badge>}
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Cena" htmlFor="obs-scene">
               <Select id="obs-scene" value={scene} onChange={(e) => setScene(e.target.value)}>
                 {scenes?.list.map((s) => (

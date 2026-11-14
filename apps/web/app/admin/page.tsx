@@ -24,7 +24,7 @@ function Overview() {
         <Stat label="Alertas abertos" value={d.openAlerts} tone={d.openAlerts ? 'warn' : 'ok'} />
       </div>
       <Card title="Serviços (heartbeat)" subtitle="Cada componente roda em processo separado. Sem heartbeat por 15s = fora do ar.">
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {kinds.map((k) => {
             const inst = d.services.filter((s) => s.kind === k);
             return (
@@ -171,7 +171,7 @@ function Plans() {
   const list = useQuery({ queryKey: ['admin-plans'], queryFn: () => api<Array<{ code: string; name: string; limits: Record<string, unknown> }>>('/admin/plans') });
   const [edit, setEdit] = useState<Record<string, string>>({});
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {(list.data ?? []).map((p) => (
         <Card key={p.code} title={`${p.name} (${p.code})`} subtitle="Limites em JSON — validados pelo servidor.">
           <Textarea className="min-h-56 font-mono text-xs" value={edit[p.code] ?? JSON.stringify(p.limits, null, 2)} onChange={(e) => setEdit({ ...edit, [p.code]: e.target.value })} aria-label={`Limites do plano ${p.name}`} />

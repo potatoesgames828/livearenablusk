@@ -35,7 +35,7 @@ export default function DemoPage({ params }: { params: Promise<{ gameId: string 
           Criar conta
         </Link>
       </header>
-      <div className="mx-auto grid max-w-7xl gap-4 px-4 pb-10 lg:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="mx-auto grid grid-cols-1 max-w-7xl gap-4 px-4 pb-10 lg:grid-cols-[minmax(0,1fr)_420px]">
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl font-bold text-white">

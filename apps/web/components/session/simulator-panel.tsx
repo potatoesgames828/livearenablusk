@@ -112,7 +112,7 @@ export function SimulatorPanel({ sessionId, commands, disabled }: { sessionId: s
       </details>
       <div>
         <p className="mb-2 text-sm font-medium text-slate-300">Cenários prontos</p>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <Button variant="secondary" disabled={disabled} loading={busy === 'basic'} onClick={() => void scenario('basic', 'Básico')}>Básico: 500 curtidas, 5 presentes</Button>
           <Button variant="secondary" disabled={disabled} loading={busy === 'storm'} icon={<CloudLightning className="size-4" />} onClick={() => void scenario('storm', 'Tempestade')}>Tempestade: 1000 curtidas + 20 presentes</Button>
           <Button variant="secondary" disabled={disabled} loading={busy === 'connector-drop'} icon={<PlugZap className="size-4" />} onClick={() => void scenario('connector-drop', 'Queda da fonte de eventos', true)}>Simular queda da conexão</Button>

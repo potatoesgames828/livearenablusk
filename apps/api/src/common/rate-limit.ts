@@ -17,7 +17,9 @@ interface RateRule {
 const RATE_KEY = 'la:rate';
 export const RateLimit = (rule: RateRule) => SetMetadata(RATE_KEY, rule);
 
-const DEFAULT_RULE: RateRule = { limit: 300, windowSec: 60, by: 'ip' };
+// Proteção grossa contra abuso por IP. É generosa porque muitos usuários reais
+// compartilham IP (CGNAT de operadoras, escritórios); rotas sensíveis têm limites próprios.
+const DEFAULT_RULE: RateRule = { limit: 1200, windowSec: 60, by: 'ip' };
 
 /**
  * Rate limiting distribuído (Redis, janela fixa). Funciona com múltiplas

@@ -20,7 +20,7 @@ export default function Home() {
         </nav>
       </header>
 
-      <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-6 md:grid-cols-2 md:pt-16">
+      <section className="mx-auto grid grid-cols-1 max-w-6xl items-center gap-10 px-4 pb-16 pt-6 md:grid-cols-2 md:pt-16">
         <div>
           <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-line-strong bg-white/5 px-3 py-1 text-xs font-semibold text-blue-200">
             <Activity className="size-3.5" aria-hidden /> Jogos interativos para TikTok LIVE
@@ -60,7 +60,7 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {[
             { icon: Monitor, title: 'PC e notebook', text: 'Painel completo com monitoramento, estatísticas e integração com OBS.' },
             { icon: Smartphone, title: 'Celular', text: 'Controle a LIVE, use o simulador e acompanhe eventos pelo telefone.' },

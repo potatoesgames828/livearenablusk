@@ -14,7 +14,7 @@ export default function HelpPage() {
   return (
     <>
       <PageHeader title="Ajuda" description="Guia rápido para PC, celular e tablet." />
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <Card title="💻 No PC / notebook">
           <ul className="list-disc space-y-1.5 pl-5 text-sm text-slate-300">
             <li>Experiência completa: configurar jogos, sala de controle, estatísticas e administração.</li>

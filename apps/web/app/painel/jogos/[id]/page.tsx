@@ -77,7 +77,7 @@ function RuleEditor({ rule, actions, onChange, onRemove, index }: { rule: EventR
         <Button type="button" variant="ghost" size="sm" onClick={onRemove} aria-label="Remover regra" icon={<Trash2 className="size-4" />} />
       </div>
       {open && (
-        <div className="grid gap-4 border-t border-line p-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 border-t border-line p-3 sm:grid-cols-2">
           <Field label="Nome da regra (opcional)" htmlFor={`${id}-label`}>
             <Input id={`${id}-label`} value={rule.label ?? ''} onChange={(e) => onChange({ ...rule, label: e.target.value || undefined })} placeholder={summary} maxLength={80} />
           </Field>
@@ -194,7 +194,7 @@ export default function ConfigEditor({ params }: { params: Promise<{ id: string 
       </div>
 
       <Card>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Nome da configuração" htmlFor="cfg-name">
             <Input id="cfg-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} disabled={!canEdit} />
           </Field>
@@ -261,7 +261,7 @@ export default function ConfigEditor({ params }: { params: Promise<{ id: string 
 
       {tab === 'settings' && (
         <Card title="Regras do jogo" subtitle="Velocidade, dificuldade e outras opções específicas deste jogo.">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {game.settings.map((s) => (
               <ParamInput key={s.key} id={`set-${s.key}`} def={s} value={body.settings[s.key]} onChange={(v) => setBody({ ...body, settings: { ...body.settings, [s.key]: v } })} />
             ))}
@@ -272,7 +272,7 @@ export default function ConfigEditor({ params }: { params: Promise<{ id: string 
 
       {tab === 'look' && (
         <Card title="Aparência" subtitle="Formato do vídeo, cores e sons.">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Formato do vídeo" htmlFor="aspect">
               <Select id="aspect" value={body.aspect} onChange={(e) => setBody({ ...body, aspect: e.target.value as 'vertical' | 'horizontal' })}>
                 <option value="vertical">Vertical 9:16 (TikTok, celular)</option>
@@ -293,7 +293,7 @@ export default function ConfigEditor({ params }: { params: Promise<{ id: string 
       )}
 
       {tab === 'test' && (
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_400px]">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_400px]">
           <Card title="Pré-visualização local" subtitle="Roda no seu navegador com as regras desta tela (mesmo sem salvar). Dados 100% simulados.">
             <div className={previewBody?.aspect === 'horizontal' ? 'aspect-video w-full overflow-hidden rounded-xl bg-black' : 'mx-auto aspect-[9/16] w-full max-w-[400px] overflow-hidden rounded-xl bg-black'}>
               <GameCanvas key={previewBody?.aspect} onReady={local.attach} sound={body.soundEnabled} />

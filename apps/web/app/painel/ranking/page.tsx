@@ -30,7 +30,7 @@ export default function RankingPage() {
   return (
     <>
       <PageHeader title="Ranking" description="Quem mais participou das suas LIVES. Espectadores são identificados pelo ID estável da fonte, não pelo nome." />
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <Card
           title="Classificação"
           action={

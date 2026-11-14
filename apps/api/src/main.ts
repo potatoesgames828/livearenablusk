@@ -13,7 +13,8 @@ export async function createApp(): Promise<NestExpressApplication> {
   const e = env();
   const logger = createLogger('api');
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: ['error', 'warn'], bodyParser: false });
-  app.set('trust proxy', process.env.TRUST_PROXY ?? 'loopback');
+  // Confia apenas em proxies locais/rede privada (web, nginx). Ver SECURITY.md (falsificação de IP).
+  app.set('trust proxy', process.env.TRUST_PROXY ?? 'loopback, uniquelocal');
   app.disable('x-powered-by');
   app.useBodyParser('json', { limit: '256kb' });
   app.use(cookieParser());

@@ -42,7 +42,7 @@ export default function OverviewPage() {
 
       {onboarding && (
         <Card className="mb-5" title="Primeiros passos" subtitle="Siga estes passos para colocar o jogo na sua LIVE.">
-          <ol className="grid gap-2 sm:grid-cols-2">
+          <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {steps.map((s, i) => (
               <li key={s.label}>
                 <Link href={s.href} className="flex min-h-12 items-center gap-3 rounded-xl border border-line bg-white/[0.02] px-3 py-2 hover:border-brand/40">
@@ -66,7 +66,7 @@ export default function OverviewPage() {
         ) : active.length === 0 ? (
           <EmptyState icon={<Radio className="size-8" />} title="Nenhuma LIVE em andamento" description="Crie ou inicie uma sessão para ver o estado em tempo real." action={<Link href="/painel/lives" className="min-h-11 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white">Ir para Minhas LIVES</Link>} />
         ) : (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {active.map((s) => (
               <Link key={s.id} href={`/painel/lives/${s.id}`} className="card group block p-4 transition hover:border-brand/40 sm:p-5">
                 <div className="flex items-start justify-between gap-3">

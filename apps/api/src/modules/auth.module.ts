@@ -168,7 +168,8 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(200)
-  @RateLimit({ limit: 20, windowSec: 60 })
+  // Limite por IP (IPs compartilhados); a força bruta é contida por e-mail+IP em assertNotLocked.
+  @RateLimit({ limit: 60, windowSec: 60 })
   async login(@Body(new ZodPipe(loginSchema)) body: z.infer<typeof loginSchema>, @Req() req: Request, @Res({ passthrough: true }) res: Response, @ClientIp() ip: string) {
     await this.svc.assertNotLocked(body.email, ip);
     const user = await this.infra.prisma.user.findUnique({ where: { email: body.email }, include: { memberships: { orderBy: { createdAt: 'asc' } } } });
@@ -207,7 +208,8 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(200)
-  @RateLimit({ limit: 60, windowSec: 60 })
+  // Exige posse de um token aleatório de 48 bytes; limite alto para IPs compartilhados.
+  @RateLimit({ limit: 600, windowSec: 60 })
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response, @ClientIp() ip: string) {
     assertCsrfHeader(req);
     const token = (req.cookies as Record<string, string> | undefined)?.[REFRESH_COOKIE];

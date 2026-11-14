@@ -49,9 +49,15 @@ let refreshing: Promise<boolean> | null = null;
 export async function refreshSession(): Promise<boolean> {
   refreshing ??= (async () => {
     try {
-      const res = await fetch('/api/auth/refresh', { method: 'POST', headers: { 'x-requested-with': 'live-arena' }, credentials: 'same-origin' });
-      if (!res.ok) {
-        useAuth.getState().setSession(null, null);
+      let res: Response | null = null;
+      // Falhas temporárias (429/5xx/rede) não encerram a sessão: tenta de novo com espera.
+      for (let attempt = 0; attempt < 4; attempt++) {
+        res = await fetch('/api/auth/refresh', { method: 'POST', headers: { 'x-requested-with': 'live-arena' }, credentials: 'same-origin' }).catch(() => null);
+        if (res && (res.ok || res.status === 401 || res.status === 403)) break;
+        await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
+      }
+      if (!res?.ok) {
+        if (!res || res.status === 401 || res.status === 403) useAuth.getState().setSession(null, null);
         return false;
       }
       const body = (await res.json()) as { accessToken: string; user: Me };

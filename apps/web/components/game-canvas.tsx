@@ -59,8 +59,10 @@ export function GameCanvas({
   }, [sound]);
 
   return (
-    <div className={className ?? 'relative h-full w-full'}>
-      <canvas ref={ref} role="img" aria-label={label} className="block" />
+    // O canvas é absoluto: seu tamanho em pixels nunca empurra o layout (evita
+    // realimentação de largura em grids e rolagem horizontal em telas de 320px).
+    <div className={`${className ?? 'h-full w-full'} relative min-w-0 overflow-hidden`}>
+      <canvas ref={ref} role="img" aria-label={label} className="absolute left-0 top-0 block" />
     </div>
   );
 }
