@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22.12.0
+  PNPM_VERSION: 10.28.0
+
+jobs:
+  qualidade:
+    name: Lint, tipos e testes unitários
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:generate
+      - run: pnpm build:packages
+      - run: pnpm lint
+      - name: Tipos dos apps
+        run: for a in api worker game-runner realtime connector stream-manager web; do (cd apps/$a && npx tsc -p tsconfig.json --noEmit) || exit 1; done
+      - run: pnpm test:unit
+
+  integracao:
+    name: Integração + E2E multiplataforma
+    runs-on: ubuntu-latest
+    needs: qualidade
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_PASSWORD: devpassword, POSTGRES_DB: livearena }
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-retries 20
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:devpassword@127.0.0.1:5432/livearena?schema=public
+      REDIS_URL: redis://127.0.0.1:6379
+      PUBLIC_WEB_URL: http://localhost:3000
+      PUBLIC_REALTIME_URL: http://localhost:4001
+      NEXT_PUBLIC_REALTIME_URL: http://localhost:4001
+      API_INTERNAL_URL: http://127.0.0.1:4000
+      INTERNAL_WEB_URL: http://127.0.0.1:3000
+      CORS_ORIGINS: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: pnpm }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg postgresql-client
+      - run: pnpm install --frozen-lockfile
+      - name: Segredos efêmeros de teste (gerados por execução)
+        run: |
+          echo "JWT_ACCESS_SECRET=$(openssl rand -base64 48)" >> $GITHUB_ENV
+          echo "JWT_REALTIME_SECRET=$(openssl rand -base64 48)" >> $GITHUB_ENV
+          echo "ENCRYPTION_KEYS=k1:$(openssl rand -base64 32)" >> $GITHUB_ENV
+      - run: pnpm db:generate && pnpm build:packages && pnpm db:migrate && pnpm db:seed
+      - run: for a in api worker game-runner realtime connector stream-manager; do (cd apps/$a && npx tsc -p tsconfig.json) || exit 1; done
+      - run: cd apps/web && NODE_ENV=production npx next build
+      - run: npx playwright install --with-deps chromium
+      - name: Sobe a pilha
+        run: |
+          node scripts/start-all.mjs > stack.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:3000/ >/dev/null && curl -sf http://127.0.0.1:4000/api/health/ready >/dev/null && break; sleep 2; done
+      - run: pnpm test:integration
+      - run: pnpm test:e2e
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with: { name: diagnostico, path: "stack.log\nplaywright-report\ntest-results" }
+
+  seguranca:
+    name: Segurança (segredos, dependências, licenças, imagem)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} }
+      - uses: pnpm/action-setup@v4
+        with: { version: ${{ env.PNPM_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: Auditoria de dependências (falha em alta/crítica)
+        run: pnpm audit --prod --audit-level high
+      - name: Verificação de licenças
+        run: node scripts/license-check.mjs
+      - name: Trivy (sistema de arquivos)
+        uses: aquasecurity/trivy-action@0.28.0
+        with: { scan-type: fs, severity: 'CRITICAL,HIGH', exit-code: '1', ignore-unfixed: true }
+      - name: Build da imagem da API
+        run: docker build -f infrastructure/docker/Dockerfile --target api -t live-arena/api:ci .
+      - name: Trivy (imagem)
+        uses: aquasecurity/trivy-action@0.28.0
+        with: { image-ref: live-arena/api:ci, severity: 'CRITICAL,HIGH', exit-code: '1', ignore-unfixed: true }

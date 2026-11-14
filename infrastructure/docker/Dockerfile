@@ -5,8 +5,12 @@
 
 ARG NODE_VERSION=22.12.0
 FROM node:${NODE_VERSION}-bookworm-slim AS base
-ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH NEXT_TELEMETRY_DISABLED=1
-RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+ENV NEXT_TELEMETRY_DISABLED=1
+# Opcional: CA de proxy corporativo via BuildKit secret (não fica na imagem):
+#   docker build --secret id=extra_ca,src=/caminho/ca.pem ...
+RUN --mount=type=secret,id=extra_ca,required=false \
+    if [ -s /run/secrets/extra_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/extra_ca; fi; \
+    npm install -g pnpm@10.28.0 && pnpm --version
 WORKDIR /repo
 
 FROM base AS deps
@@ -20,7 +24,9 @@ COPY apps/stream-manager/package.json apps/stream-manager/
 COPY apps/web/package.json apps/web/
 COPY packages packages
 COPY games games
-RUN find packages games -type f ! -name package.json -delete && \
+RUN --mount=type=secret,id=extra_ca,required=false \
+    if [ -s /run/secrets/extra_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/extra_ca; fi; \
+    find packages games -type f ! -name package.json -delete && \
     pnpm install --frozen-lockfile --ignore-scripts
 
 FROM deps AS build
@@ -28,7 +34,9 @@ COPY . .
 ARG API_INTERNAL_URL=http://api:4000
 ARG NEXT_PUBLIC_REALTIME_URL=http://localhost:4001
 ENV API_INTERNAL_URL=$API_INTERNAL_URL NEXT_PUBLIC_REALTIME_URL=$NEXT_PUBLIC_REALTIME_URL
-RUN pnpm rebuild && pnpm db:generate && pnpm build:packages && \
+RUN --mount=type=secret,id=extra_ca,required=false \
+    if [ -s /run/secrets/extra_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/extra_ca; fi; \
+    pnpm rebuild && pnpm db:generate && pnpm build:packages && \
     for a in api worker game-runner realtime connector stream-manager; do (cd apps/$a && npx tsc -p tsconfig.json); done && \
     (cd apps/web && NODE_ENV=production npx next build)
 # Remove dependências de desenvolvimento para as imagens de runtime.

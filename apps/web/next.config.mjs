@@ -29,6 +29,8 @@ const nextConfig = {
   // Raiz do monorepo: o build standalone inclui os pacotes internos.
   outputFileTracingRoot: path.join(path.dirname(fileURLToPath(import.meta.url)), '../../'),
   reactStrictMode: true,
+  // Sem otimização de imagens no servidor (não usamos next/image; evita depender do sharp/libvips).
+  images: { unoptimized: true },
   poweredByHeader: false,
   transpilePackages: ['@live-arena/shared', '@live-arena/game-engine', '@live-arena/games', '@live-arena/automation'],
   async rewrites() {

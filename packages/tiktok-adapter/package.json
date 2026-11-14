@@ -15,12 +15,5 @@
   "devDependencies": {
     "@types/ws": "8.18.1"
   },
-  "peerDependencies": {
-    "tiktok-live-connector": ">=2.0.0"
-  },
-  "peerDependenciesMeta": {
-    "tiktok-live-connector": {
-      "optional": true
-    }
-  }
+  "optionalNote": "tiktok-live-connector N\u00c3O \u00e9 depend\u00eancia: AGPL-3.0 c/ exce\u00e7\u00f5es (ver docs/LICENSE_AUDIT.md). Carregado por import din\u00e2mico somente se instalado manualmente e com TTLC_ENABLED=true + TTLC_LICENSE_ACK=AGPL-3.0."
 }
