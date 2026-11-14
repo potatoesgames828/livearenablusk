@@ -1,0 +1,80 @@
+{
+  "at": "2026-11-14T15:15:55.475Z",
+  "results": [
+    {
+      "name": "1. Falha simulada no runner (injeção) → recuperação do checkpoint",
+      "ok": true,
+      "durationMs": 2524,
+      "recoveryMs": 11,
+      "simTimeBefore": 3.467,
+      "simTimeAfter": 6,
+      "waveBefore": 1,
+      "waveAfter": 1,
+      "continuity": true
+    },
+    {
+      "name": "2. SIGKILL no processo game-runner → failover após expirar o lease",
+      "ok": true,
+      "durationMs": 9535,
+      "killedPid": "4829",
+      "recoveryMs": 7008,
+      "simTimeBefore": 7.667,
+      "simTimeAfter": 7.9,
+      "progressLostSec": "6.8"
+    },
+    {
+      "name": "3. Queda da fonte de eventos (injeção) → reconexão automática",
+      "ok": true,
+      "durationMs": 8235,
+      "recoveryMs": 8222,
+      "statesSeen": [
+        "RECONNECTING",
+        "CONNECTING",
+        "CONNECTED"
+      ],
+      "gameKeptRunning": true
+    },
+    {
+      "name": "4. SIGKILL no worker durante rajada de eventos → nenhum presente perdido",
+      "ok": true,
+      "durationMs": 4231,
+      "killedPid": "4828",
+      "processed": 200,
+      "expected": 200,
+      "ms": 3353
+    },
+    {
+      "name": "5. Eventos duplicados (mesmo msgId reenviado) são ignorados",
+      "ok": true,
+      "durationMs": 4024,
+      "credited": 10,
+      "expected": 10
+    },
+    {
+      "name": "6. Reinício do Redis (sem persistência) → sessões reinscritas e estado restaurado do PostgreSQL",
+      "ok": true,
+      "durationMs": 20315,
+      "recoveryMs": 2292,
+      "simTimeBefore": 40.367,
+      "simTimeAfter": 44.7,
+      "note": "Redis perdeu todos os dados voláteis; watchdog reinscreveu a sessão e o runner restaurou o checkpoint do PostgreSQL."
+    },
+    {
+      "name": "7. PostgreSQL indisponível por 8s → jogo continua; API se recupera",
+      "ok": true,
+      "durationMs": 12845,
+      "readinessDuringOutage": 503,
+      "gameKeptPublishingDuringOutage": true,
+      "apiRecoveryMs": 4593
+    },
+    {
+      "name": "8. Estabilidade geral durante os testes",
+      "ok": true,
+      "durationMs": 4,
+      "finalState": "RUNNING",
+      "runnerState": "RUNNING",
+      "connectorState": "CONNECTED",
+      "maxSnapshotGapMs": 5344
+    }
+  ]
+}

@@ -42,10 +42,16 @@ async function main(): Promise<void> {
 
   // Tarefas programadas (idempotentes: o BullMQ deduplica por "scheduler id").
   const maint = getQueue(QUEUES.maintenance, queueRedis);
-  await maint.upsertJobScheduler('watchdog', { every: 15_000 }, { name: 'watchdog' });
-  await maint.upsertJobScheduler('queue-metrics', { every: 15_000 }, { name: 'queue-metrics' });
-  await maint.upsertJobScheduler('retention', { every: 3_600_000 }, { name: 'retention' });
-  await getQueue(QUEUES.automation, queueRedis).upsertJobScheduler('automation-tick', { every: 30_000 }, { name: 'tick', data: { trigger: 'TICK' } });
+  const ensureSchedulers = async () => {
+    await maint.upsertJobScheduler('watchdog', { every: 15_000 }, { name: 'watchdog' });
+    await maint.upsertJobScheduler('queue-metrics', { every: 15_000 }, { name: 'queue-metrics' });
+    await maint.upsertJobScheduler('retention', { every: 3_600_000 }, { name: 'retention' });
+    await getQueue(QUEUES.automation, queueRedis).upsertJobScheduler('automation-tick', { every: 30_000 }, { name: 'tick', data: { trigger: 'TICK' } });
+  };
+  await ensureSchedulers();
+  // Re-registra periodicamente: se o Redis perder dados, os agendamentos voltam sozinhos.
+  const schedTimer = setInterval(() => void ensureSchedulers().catch(() => undefined), 30_000);
+  schedTimer.unref();
 
   const stopHb = startHeartbeat(redis, identity, () => ({ concurrency, running: workers.map((w) => ({ q: w.name, running: w.isRunning() })) }));
   startEventLoopMonitor((lag) => logger.warn({ lagMs: Math.round(lag) }, 'event loop lento'));

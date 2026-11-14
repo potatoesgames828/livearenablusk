@@ -6,7 +6,7 @@ import { decryptSecret } from '@live-arena/security';
 import { getPrisma, disconnectPrisma } from '@live-arena/database';
 import {
   createRedis, enqueueEvents, getQueue, installProcessHandlers, keys, Lease, QUEUES, raiseAlert, redisHealthy, resolveAlerts,
-  serviceIdentity, startHeartbeat, updateSessionStatus, closeQueues, getOrRebuildSessionMeta,
+  serviceIdentity, startHeartbeat, updateSessionStatus, closeQueues, getOrRebuildSessionMeta, confirmSessionActive,
 } from '@live-arena/runtime';
 import { backoffDelay, type ConnectorState, type LiveEvent } from '@live-arena/shared';
 import { createLogger, initMetrics, initTracing, metrics, startHealthServer, type Logger } from '@live-arena/observability';
@@ -219,7 +219,12 @@ async function main(): Promise<void> {
   const loop = async () => {
     lastLoop = Date.now();
     const wanted = new Set(await redis.smembers(keys.activeConnectors()).catch(() => [] as string[]));
-    for (const [id, c] of conns) if (!wanted.has(id)) void c.stop('sessão encerrada');
+    for (const [id, c] of conns) {
+      if (wanted.has(id)) continue;
+      // Confirma no banco antes de desconectar da fonte (o índice Redis pode ter sido perdido).
+      if (await confirmSessionActive(redis, id, { withConnector: true })) continue;
+      void c.stop('sessão encerrada');
+    }
     for (const id of wanted) {
       if (conns.has(id) || conns.size >= MAX_CONNECTIONS) continue;
       const lease = new Lease(redis, keys.connectorLease(id), 15_000, `${identity.id}:${id}`);

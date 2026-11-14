@@ -1,6 +1,7 @@
 import { createLogger, initMetrics, initTracing, metrics, startEventLoopMonitor, startHealthServer } from '@live-arena/observability';
 import {
   createRedis, getQueue, installProcessHandlers, keys, Lease, QUEUES, redisHealthy, serviceIdentity, startHeartbeat, closeQueues,
+  confirmSessionActive,
 } from '@live-arena/runtime';
 import { disconnectPrisma } from '@live-arena/database';
 import { SessionRunner } from './session-runner';
@@ -8,7 +9,7 @@ import { SessionRunner } from './session-runner';
 const logger = createLogger('game-runner');
 const MAX_SESSIONS = Number(process.env.RUNNER_MAX_SESSIONS ?? 20);
 const MAX_HEAP_MB = Number(process.env.RUNNER_MAX_HEAP_MB ?? 768);
-const LEASE_TTL_MS = Number(process.env.RUNNER_LEASE_TTL_MS ?? 10_000);
+const LEASE_TTL_MS = Number(process.env.RUNNER_LEASE_TTL_MS ?? 6_000);
 
 async function main(): Promise<void> {
   await initTracing('game-runner');
@@ -19,6 +20,7 @@ async function main(): Promise<void> {
   const gameEventsQueue = getQueue(QUEUES.gameEvents, queueRedis);
   const runners = new Map<string, SessionRunner>();
   const starting = new Set<string>();
+  const halting = new Set<string>();
   let lastLoopAt = Date.now();
   let shuttingDown = false;
 
@@ -32,12 +34,14 @@ async function main(): Promise<void> {
     const heapMb = process.memoryUsage().heapUsed / 1024 / 1024;
     const active = await redis.smembers(keys.activeSessions()).catch(() => [] as string[]);
     const activeSet = new Set(active);
-    // Sessões que não estão mais ativas: encerra localmente.
+    // Sessões fora do índice Redis: confirma no banco antes de encerrar
+    // (após perda de dados do Redis o índice é reconstruído, sem derrubar a LIVE).
     for (const [id, r] of runners) {
-      if (!activeSet.has(id)) {
-        logger.info({ sessionId: id }, 'sessão não está mais ativa; encerrando localmente');
-        void r.halt(true);
-      }
+      if (activeSet.has(id) || halting.has(id)) continue;
+      if (await confirmSessionActive(redis, id)) continue;
+      halting.add(id);
+      logger.info({ sessionId: id }, 'sessão encerrada no banco; finalizando localmente');
+      void r.halt(true).finally(() => halting.delete(id));
     }
     if (heapMb > MAX_HEAP_MB) {
       logger.warn({ heapMb: Math.round(heapMb) }, 'limite de memória atingido; não aceitando novas sessões');

@@ -9,3 +9,4 @@ export * from './process';
 export * from './session-meta';
 export * from './session-control';
 export * from './ingest';
+export * from './source-of-truth';

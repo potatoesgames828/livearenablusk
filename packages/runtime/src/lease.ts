@@ -1,9 +1,15 @@
 import { randomUUID } from 'node:crypto';
 import type { Redis } from 'ioredis';
 
+// 1 = renovado; 2 = chave tinha sumido (ex.: Redis reiniciado) e foi readquirida; 0 = outro dono.
 const RENEW_LUA = `
-if redis.call("get", KEYS[1]) == ARGV[1] then
-  return redis.call("pexpire", KEYS[1], ARGV[2])
+local v = redis.call("get", KEYS[1])
+if v == ARGV[1] then
+  redis.call("pexpire", KEYS[1], ARGV[2])
+  return 1
+elseif not v then
+  redis.call("set", KEYS[1], ARGV[1], "PX", ARGV[2])
+  return 2
 else
   return 0
 end`;
@@ -39,9 +45,14 @@ export class Lease {
     return ok === 'OK';
   }
 
+  /**
+   * Renova a posse. Se a chave desapareceu (perda de dados do Redis), readquire
+   * em vez de assumir que outro processo tomou posse — evita derrubar sessões
+   * saudáveis por causa de uma falha de infraestrutura.
+   */
   async renew(): Promise<boolean> {
     const r = (await this.redis.eval(RENEW_LUA, 1, this.key, this.token, String(this.ttlMs))) as number;
-    return r === 1;
+    return r === 1 || r === 2;
   }
 
   /** Renova automaticamente; chama onLost se a posse for perdida. */

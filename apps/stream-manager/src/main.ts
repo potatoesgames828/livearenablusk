@@ -1,6 +1,6 @@
 import { Worker, type ConnectionOptions, type Job } from 'bullmq';
 import { getPrisma, disconnectPrisma } from '@live-arena/database';
-import { createRedis, installProcessHandlers, keys, Lease, QUEUES, raiseAlert, redisHealthy, serviceIdentity, startHeartbeat, updateSessionStatus } from '@live-arena/runtime';
+import { createRedis, installProcessHandlers, keys, Lease, QUEUES, raiseAlert, redisHealthy, serviceIdentity, startHeartbeat, updateSessionStatus, confirmSessionActive } from '@live-arena/runtime';
 import { createLogger, initMetrics, initTracing, startHealthServer } from '@live-arena/observability';
 import { StreamPipeline } from './pipeline';
 
@@ -61,7 +61,7 @@ async function main(): Promise<void> {
   const reaper = setInterval(() => {
     void (async () => {
       const active = new Set(await redis.smembers(keys.activeSessions()).catch(() => [] as string[]));
-      for (const [id, p] of pipelines) if (!active.has(id)) await p.stop(true);
+      for (const [id, p] of pipelines) if (!active.has(id) && !(await confirmSessionActive(redis, id))) await p.stop(true);
     })();
   }, 5000);
 
