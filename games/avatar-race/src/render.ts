@@ -101,10 +101,17 @@ export const renderer: GameRenderer<RaceSnapshot> = {
     kit.particles.draw(ctx);
 
     const vertical = snap.aspect === 'vertical';
-    const iy = vertical ? y + h + 80 : y - 40;
+    const iy = vertical ? y + h + 80 : y - 30;
     text(ctx, `⏱ ${snap.raceTime.toFixed(1)}s`, x, iy, { size: 34, weight: 900, color: '#f8fafc' });
-    text(ctx, `Fila: ${snap.queue}`, x + w / 2, iy, { size: 30, weight: 700, color: '#cbd5e1', align: 'center' });
-    if (snap.lastWinner) text(ctx, `Último vencedor: ${snap.lastWinner}`, x + w, iy, { size: 26, weight: 700, color: ACCENT, align: 'right', maxWidth: w / 2 - 40 });
+    if (vertical) {
+      text(ctx, `Fila: ${snap.queue}`, x + w / 2, iy, { size: 30, weight: 700, color: '#cbd5e1', align: 'center' });
+      if (snap.lastWinner) text(ctx, `Último vencedor: ${snap.lastWinner}`, x + w, iy, { size: 26, weight: 700, color: ACCENT, align: 'right', maxWidth: w / 2 - 40 });
+    } else {
+      // No 16:9 o ranking ocupa o canto superior direito: informações alinhadas à esquerda.
+      text(ctx, `Fila: ${snap.queue}`, x + 260, iy, { size: 30, weight: 700, color: '#cbd5e1' });
+      if (snap.lastWinner) text(ctx, `Último vencedor: ${snap.lastWinner}`, x + 520, iy, { size: 26, weight: 700, color: ACCENT, maxWidth: 680 });
+      text(ctx, 'Digite !correr para entrar', x, iy - 50, { size: 30, weight: 900, color: ACCENT });
+    }
     if (vertical) text(ctx, 'Digite !correr para entrar', snap.width / 2, iy + 60, { size: 34, weight: 900, color: ACCENT, align: 'center' });
     drawHud(ctx, snap, 'Avatar Race', ACCENT, time);
   },

@@ -36,7 +36,7 @@ const services = [
   { name: 'game-runner', cmd: 'node', args: ['apps/game-runner/dist/main.js'] },
   { name: 'connector', cmd: 'node', args: ['apps/connector/dist/main.js'] },
   { name: 'stream-manager', cmd: 'node', args: ['apps/stream-manager/dist/main.js'] },
-  { name: 'web', cmd: 'node', args: ['node_modules/next/dist/bin/next', 'start', '-p', env.WEB_PORT ?? '3000'], cwd: 'apps/web' },
+  { name: 'web', cmd: 'node', args: ['node_modules/next/dist/bin/next', 'start', '-p', env.WEB_PORT ?? '3000'], cwd: 'apps/web', env: { NODE_ENV: 'production' } },
 ].filter((s) => (!only || only.includes(s.name)) && !(noWeb && s.name === 'web'));
 
 const colors = ['\x1b[36m', '\x1b[35m', '\x1b[33m', '\x1b[32m', '\x1b[34m', '\x1b[31m', '\x1b[37m'];
@@ -45,7 +45,7 @@ let shuttingDown = false;
 
 function start(svc, i, attempt = 0) {
   const color = colors[i % colors.length];
-  const child = spawn(svc.cmd, svc.args, { cwd: path.join(root, svc.cwd ?? '.'), env, stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(svc.cmd, svc.args, { cwd: path.join(root, svc.cwd ?? '.'), env: { ...env, ...(svc.env ?? {}) }, stdio: ['ignore', 'pipe', 'pipe'] });
   procs.set(svc.name, child);
   const prefix = `${color}[${svc.name}]\x1b[0m `;
   const pipe = (stream) => {

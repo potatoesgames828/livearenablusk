@@ -119,7 +119,7 @@ export const renderer: GameRenderer<SurvivalSnapshot> = {
       ctx.fill();
     }
     text(ctx, `NÚCLEO ${c.hp}/${c.maxHp}${c.shield ? ` +${c.shield}🛡` : ''}`, snap.width / 2, by + 29, { size: 22, weight: 900, color: '#fff', align: 'center' });
-    const iy = vertical ? 250 : 170;
+    const iy = vertical ? 470 : 170;
     text(ctx, `ONDA ${snap.wave}`, snap.width / 2, iy, { size: 56, weight: 900, color: '#f8fafc', align: 'center', stroke: 'rgba(0,0,0,0.6)' });
     text(ctx, `Abates ${snap.kills} · Recorde onda ${snap.bestWave}${snap.frozen ? ' · ❄ CONGELADO' : ''}`, snap.width / 2, iy + 44, {
       size: 26, weight: 700, color: '#a5f3fc', align: 'center',

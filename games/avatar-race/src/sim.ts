@@ -57,9 +57,9 @@ export class AvatarRace extends BaseGame<RaceSnapshot, RaceState> {
     const vertical = this.aspect === 'vertical';
     const lanes = this.num('lanes');
     const x = vertical ? 60 : 120;
-    const y = vertical ? 420 : 260;
+    const y = vertical ? 420 : 400;
     const w = this.W - x * 2;
-    const h = vertical ? this.H - y - 460 : this.H - y - 140;
+    const h = vertical ? this.H - y - 460 : this.H - y - 130;
     this.track = { length: this.num('trackLength'), lanes, x, y, w, h };
     this.st = { racers: [], obstacles: [], queue: [], raceTime: 0, firstFinishAt: null, finishers: 0, lastWinner: null };
     this.resetRound();

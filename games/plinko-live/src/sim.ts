@@ -75,8 +75,8 @@ export class PlinkoLive extends BaseGame<PlinkoSnapshot, PlinkoState> {
     const vertical = this.aspect === 'vertical';
     const bw = vertical ? this.W - 80 : Math.min(1100, this.W - 900);
     const bx = (this.W - bw) / 2;
-    const by = vertical ? 320 : 150;
-    const bh = vertical ? this.H - by - 420 : this.H - by - 90;
+    const by = vertical ? 420 : 150;
+    const bh = vertical ? this.H - by - 600 : this.H - by - 90;
     this.board = { x: bx, y: by, w: bw, h: bh };
     this.buildBoard();
     this.st = { balls: [], lanes: {}, autoTimer: 1, roundTime: 0, boostUntil: 0, landed: 0, lastHits: [], bestDrop: null };

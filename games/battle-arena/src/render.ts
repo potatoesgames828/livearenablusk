@@ -134,11 +134,11 @@ export const renderer: GameRenderer<BattleSnapshot> = {
     const red = snap.champs.find((c) => c.team === 'red')!;
     const blue = snap.champs.find((c) => c.team === 'blue')!;
     if (vertical) {
-      drawBars(ctx, blue, 60, 250, snap.width - 120, snap.members.blue, snap.wins.blue);
+      drawBars(ctx, blue, 60, 470, snap.width - 120, snap.members.blue, snap.wins.blue);
       drawBars(ctx, red, 60, snap.height - 290, snap.width - 120, snap.members.red, snap.wins.red);
     } else {
-      drawBars(ctx, red, 60, 200, 640, snap.members.red, snap.wins.red);
-      drawBars(ctx, blue, snap.width - 700, 200, 640, snap.members.blue, snap.wins.blue);
+      drawBars(ctx, red, 60, 340, 640, snap.members.red, snap.wins.red);
+      drawBars(ctx, blue, snap.width - 700, 340, 640, snap.members.blue, snap.wins.blue);
     }
     const tx = snap.width / 2;
     const ty = vertical ? snap.height * 0.52 - 20 : 150;

@@ -59,8 +59,8 @@ export class SnakeLive extends BaseGame<SnakeSnapshot, SnakeState> {
 
   constructor(ctx: SimContext) {
     super(manifest, ctx);
-    const top = this.aspect === 'vertical' ? 300 : 170;
-    const bottom = this.aspect === 'vertical' ? 380 : 120;
+    const top = this.aspect === 'vertical' ? 420 : 170;
+    const bottom = this.aspect === 'vertical' ? 520 : 120;
     const side = this.aspect === 'vertical' ? 54 : 480;
     const cols = Math.floor((this.W - side * 2) / CELL);
     const rows = Math.floor((this.H - top - bottom) / CELL);
@@ -248,6 +248,8 @@ export class SnakeLive extends BaseGame<SnakeSnapshot, SnakeState> {
     const manual = s.manualDir && this.b.t < s.manualUntil;
     let dir = manual ? s.manualDir! : this.autopilot();
     if (dir === OPPOSITE[s.dir]) dir = s.dir;
+    // Segurança: o comando do público nunca leva a uma colisão imediata.
+    if (manual && this.wouldCollide(dir)) dir = this.autopilot();
     s.dir = dir;
     const head = s.body[0]!;
     const next = this.wrap({ x: head.x + DIRS[dir].x, y: head.y + DIRS[dir].y });
@@ -257,7 +259,7 @@ export class SnakeLive extends BaseGame<SnakeSnapshot, SnakeState> {
     const hitSelf = bodyToCheck.some((c) => c.x === next.x && c.y === next.y);
     const hitObstacle = s.obstacles.some((c) => c.x === next.x && c.y === next.y);
     if (hitWall || hitSelf || hitObstacle) {
-      this.die(hitWall ? 'parede' : hitSelf ? 'próprio corpo' : 'obstáculo');
+      this.die(hitWall ? 'na parede' : hitSelf ? 'no próprio corpo' : 'em um obstáculo');
       return;
     }
     s.body.unshift(next);
@@ -282,13 +284,22 @@ export class SnakeLive extends BaseGame<SnakeSnapshot, SnakeState> {
     s.best = Math.max(s.best, s.body.length);
   }
 
+  private wouldCollide(dir: Dir): boolean {
+    const s = this.st;
+    const head = s.body[0]!;
+    const n = this.wrap({ x: head.x + DIRS[dir].x, y: head.y + DIRS[dir].y });
+    if (n.x < 0 || n.y < 0 || n.x >= s.cols || n.y >= s.rows) return true;
+    const body = s.grow === 0 ? s.body.slice(0, -1) : s.body;
+    return body.some((c) => c.x === n.x && c.y === n.y) || s.obstacles.some((c) => c.x === n.x && c.y === n.y);
+  }
+
   private die(reason: string): void {
     const s = this.st;
     s.alive = false;
     s.deaths++;
     const head = s.body[0]!;
     this.emitFx('death', this.cx(head.x), this.cy(head.y), { color: '#ef4444' });
-    this.notice(`💥 A cobra bateu no ${reason}! Tamanho: ${s.body.length}`, '#f87171');
+    this.notice(`💥 A cobra bateu ${reason}! Tamanho: ${s.body.length}`, '#f87171');
     const top = this.leaderboard(1, true)[0];
     this.endRound(top ? { id: top.id, name: top.name, score: top.score } : undefined, { length: s.body.length, eaten: s.eaten, reason }, 5);
   }

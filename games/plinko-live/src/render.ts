@@ -52,11 +52,11 @@ export const renderer: GameRenderer<PlinkoSnapshot> = {
     kit.particles.draw(ctx);
 
     const vertical = snap.aspect === 'vertical';
-    const iy = vertical ? y + h + 70 : 90;
-    const ix = vertical ? x : snap.width - 420;
+    const iy = vertical ? y + h + 70 : 200;
+    const ix = vertical ? x : 36;
     text(ctx, `⏱ ${snap.timeLeft}s`, ix, iy, { size: 36, weight: 900, color: '#f8fafc' });
-    text(ctx, 'Últimos: ' + snap.lastHits.map((m) => `x${m}`).join(' '), ix, iy + 50, { size: 26, weight: 700, color: '#d8b4fe', maxWidth: vertical ? w : 400 });
-    if (snap.bestDrop) text(ctx, `Melhor jogada: ${snap.bestDrop.name} (+${snap.bestDrop.points})`, ix, iy + 96, { size: 26, weight: 700, color: '#facc15', maxWidth: vertical ? w : 400 });
+    text(ctx, 'Últimos: ' + snap.lastHits.map((m) => `x${m}`).join(' '), ix, iy + 50, { size: 26, weight: 700, color: '#d8b4fe', maxWidth: vertical ? w : 340 });
+    if (snap.bestDrop) text(ctx, `Melhor jogada: ${snap.bestDrop.name} (+${snap.bestDrop.points})`, ix, iy + 96, { size: 26, weight: 700, color: '#facc15', maxWidth: vertical ? w : 340 });
     text(ctx, 'Pontos virtuais • sem apostas', snap.width / 2, snap.height - 100, { size: 22, weight: 600, color: '#94a3b8', align: 'center' });
     drawHud(ctx, snap, 'Plinko Live', ACCENT, time);
   },

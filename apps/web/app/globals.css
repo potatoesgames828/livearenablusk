@@ -1,0 +1,105 @@
+@import 'tailwindcss';
+
+/* Identidade visual LIVE ARENA — tokens centralizados */
+@theme {
+  --color-ink-950: #04060d;
+  --color-ink-900: #070b17;
+  --color-ink-850: #0a1020;
+  --color-ink-800: #0e1529;
+  --color-ink-700: #151e38;
+  --color-ink-600: #1f2a4a;
+  --color-line: rgba(148, 163, 184, 0.14);
+  --color-line-strong: rgba(148, 163, 184, 0.28);
+  --color-brand: #3b82f6;
+  --color-brand-strong: #2563eb;
+  --color-brand-soft: rgba(59, 130, 246, 0.14);
+  --color-violet: #8b5cf6;
+  --color-ok: #22c55e;
+  --color-warn: #f59e0b;
+  --color-bad: #ef4444;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  --breakpoint-xs: 481px;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-ink-900);
+  color: #e2e8f0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  overflow-x: hidden;
+  min-height: 100dvh;
+}
+
+/* Fundo sutil com gradientes controlados */
+.app-backdrop {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(59, 130, 246, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(139, 92, 246, 0.1), transparent 60%),
+    var(--color-ink-900);
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(21, 30, 56, 0.72), rgba(14, 21, 41, 0.72));
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.6);
+}
+
+/* Foco visível e acessível */
+:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Área segura de aparelhos com notch */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+dialog::backdrop {
+  background: rgba(2, 4, 10, 0.7);
+  backdrop-filter: blur(4px);
+}
