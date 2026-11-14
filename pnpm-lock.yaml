@@ -396,6 +396,15 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
 
+  games/slap-arena:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
   games/snake-live:
     dependencies:
       '@live-arena/game-engine':
@@ -486,6 +495,9 @@ importers:
       '@live-arena/game-plinko-live':
         specifier: workspace:*
         version: link:../../games/plinko-live
+      '@live-arena/game-slap-arena':
+        specifier: workspace:*
+        version: link:../../games/slap-arena
       '@live-arena/game-snake-live':
         specifier: workspace:*
         version: link:../../games/snake-live

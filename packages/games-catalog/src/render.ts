@@ -8,6 +8,7 @@ import { renderer as survival } from '@live-arena/game-survival-arena/render';
 import { renderer as melonPop } from '@live-arena/game-melon-pop/render';
 import { renderer as tugOfWar } from '@live-arena/game-tug-of-war/render';
 import { renderer as towerWar } from '@live-arena/game-tower-war/render';
+import { renderer as slapArena } from '@live-arena/game-slap-arena/render';
 
 /** Registro de renderizadores (lado navegador). */
 export const GAME_RENDERERS: Record<string, GameRenderer<BaseSnapshot>> = {
@@ -19,4 +20,5 @@ export const GAME_RENDERERS: Record<string, GameRenderer<BaseSnapshot>> = {
   'melon-pop': melonPop as unknown as GameRenderer<BaseSnapshot>,
   'tug-of-war': tugOfWar as unknown as GameRenderer<BaseSnapshot>,
   'tower-war': towerWar as unknown as GameRenderer<BaseSnapshot>,
+  'slap-arena': slapArena as unknown as GameRenderer<BaseSnapshot>,
 };

@@ -27,6 +27,7 @@
     "@live-arena/game-survival-arena": "workspace:*",
     "@live-arena/game-melon-pop": "workspace:*",
     "@live-arena/game-tug-of-war": "workspace:*",
-    "@live-arena/game-tower-war": "workspace:*"
+    "@live-arena/game-tower-war": "workspace:*",
+    "@live-arena/game-slap-arena": "workspace:*"
   }
 }
