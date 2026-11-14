@@ -5,10 +5,18 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./render": { "types": "./dist/render.d.ts", "default": "./dist/render.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./render": {
+      "types": "./dist/render.d.ts",
+      "default": "./dist/render.js"
+    }
   },
-  "scripts": { "build": "tsc -b" },
+  "scripts": {
+    "build": "tsc -b"
+  },
   "dependencies": {
     "@live-arena/shared": "workspace:*",
     "@live-arena/game-engine": "workspace:*",
@@ -16,6 +24,8 @@
     "@live-arena/game-battle-arena": "workspace:*",
     "@live-arena/game-avatar-race": "workspace:*",
     "@live-arena/game-plinko-live": "workspace:*",
-    "@live-arena/game-survival-arena": "workspace:*"
+    "@live-arena/game-survival-arena": "workspace:*",
+    "@live-arena/game-melon-pop": "workspace:*",
+    "@live-arena/game-tug-of-war": "workspace:*"
   }
 }

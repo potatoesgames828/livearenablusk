@@ -378,6 +378,15 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
 
+  games/melon-pop:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
   games/plinko-live:
     dependencies:
       '@live-arena/game-engine':
@@ -397,6 +406,15 @@ importers:
         version: link:../../packages/shared
 
   games/survival-arena:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
+  games/tug-of-war:
     dependencies:
       '@live-arena/game-engine':
         specifier: workspace:*
@@ -453,6 +471,9 @@ importers:
       '@live-arena/game-engine':
         specifier: workspace:*
         version: link:../game-engine
+      '@live-arena/game-melon-pop':
+        specifier: workspace:*
+        version: link:../../games/melon-pop
       '@live-arena/game-plinko-live':
         specifier: workspace:*
         version: link:../../games/plinko-live
@@ -462,6 +483,9 @@ importers:
       '@live-arena/game-survival-arena':
         specifier: workspace:*
         version: link:../../games/survival-arena
+      '@live-arena/game-tug-of-war':
+        specifier: workspace:*
+        version: link:../../games/tug-of-war
       '@live-arena/shared':
         specifier: workspace:*
         version: link:../shared

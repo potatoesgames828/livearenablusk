@@ -1,0 +1,16 @@
+{
+  "name": "@live-arena/game-melon-pop",
+  "version": "0.2.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./render": { "types": "./dist/render.d.ts", "default": "./dist/render.js" }
+  },
+  "scripts": { "build": "tsc -b" },
+  "dependencies": {
+    "@live-arena/shared": "workspace:*",
+    "@live-arena/game-engine": "workspace:*"
+  }
+}
