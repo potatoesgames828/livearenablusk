@@ -4,3 +4,4 @@ export * from './base-game';
 export * from './host';
 export * from './config';
 export * from './math';
+export * from './match';
