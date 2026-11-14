@@ -56,10 +56,10 @@ test.describe('painel autenticado', () => {
       await expect(page).toHaveURL(/ranking/);
     } else {
       await expect(page.getByRole('complementary', { name: 'Menu principal' })).toBeVisible();
-      await page.getByRole('link', { name: 'Central de jogos' }).click();
+      await page.getByRole('complementary', { name: 'Menu principal' }).getByRole('link', { name: 'Biblioteca de jogos' }).click();
       await expect(page).toHaveURL(/jogos/);
     }
-    for (const path of ['/painel', '/painel/lives', '/painel/jogos', '/painel/automacoes', '/painel/eventos', '/painel/overlays', '/painel/estatisticas', '/painel/ranking', '/painel/configuracoes', '/painel/ajuda']) {
+    for (const path of ['/painel', '/painel/jogos', '/painel/lives', '/painel/mapeamento', '/painel/overlays', '/painel/estatisticas', '/painel/historico', '/painel/sons', '/painel/alertas', '/painel/automacoes', '/painel/ranking', '/painel/eventos', '/painel/configuracoes', '/painel/assinatura', '/painel/ajuda']) {
       await page.goto(path);
       await expect(page.locator('h1').first()).toBeVisible();
       await expectNoHorizontalScroll(page);
@@ -118,5 +118,66 @@ test.describe('painel autenticado', () => {
     await loginUI(page, me.email, me.password);
     await page.goto(`/painel/lives/${s.id}`);
     await expect(page.getByText('Não encontramos o que você procurou.')).toBeVisible();
+  });
+});
+
+test.describe('produto v2', () => {
+  test('biblioteca: busca, categoria e favorito', async ({ page }) => {
+    const acc = await createAccount();
+    await loginUI(page, acc.email, acc.password);
+    await page.goto('/painel/jogos');
+    await expect(page.getByRole('heading', { name: 'Biblioteca de jogos' })).toBeVisible();
+    await page.getByPlaceholder('Buscar por nome, categoria…').fill('melancia');
+    await expect(page.getByRole('heading', { name: 'Melancia Elástica' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Battle Arena' })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Favoritar Melancia Elástica' }).click();
+    await page.getByPlaceholder('Buscar por nome, categoria…').fill('');
+    await page.getByRole('tab', { name: '★ Favoritos' }).click();
+    await expect(page.getByRole('heading', { name: 'Melancia Elástica' })).toBeVisible();
+    await page.reload();
+    await page.getByRole('tab', { name: '★ Favoritos' }).click();
+    await expect(page.getByRole('heading', { name: 'Melancia Elástica' })).toBeVisible();
+    await page.getByRole('tab', { name: 'Corridas' }).click();
+    await expect(page.getByRole('heading', { name: 'Corrida Animal' })).toBeVisible();
+    await expectNoHorizontalScroll(page);
+  });
+
+  test('overlay único: cria o link e o link abre a página transparente', async ({ page, context }) => {
+    const acc = await createAccount();
+    await loginUI(page, acc.email, acc.password);
+    await page.goto('/painel/overlays');
+    await page.getByRole('button', { name: 'Criar meu link de overlay' }).click();
+    const field = page.getByLabel('Link do overlay (copie agora)');
+    await expect(field).toBeVisible();
+    const url = await field.inputValue();
+    expect(url).toMatch(/\/overlay\/ovl_/);
+    const ov = await context.newPage();
+    await ov.goto(new URL(url).pathname);
+    await expect(ov.locator('main')).toBeVisible();
+    await expect(ov.getByText('Link de overlay inválido ou revogado.')).toHaveCount(0);
+    const bg = await ov.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    expect(bg).toBe('rgba(0, 0, 0, 0)');
+    await expectNoHorizontalScroll(page);
+  });
+
+  test('alertas: cria a partir de modelo e aparece na configuração de eventos', async ({ page }) => {
+    const acc = await createAccount();
+    await loginUI(page, acc.email, acc.password);
+    await page.goto('/painel/alertas');
+    await page.getByRole('button', { name: 'Novo seguidor' }).click();
+    await page.getByRole('button', { name: 'Salvar' }).click();
+    await expect(page.getByRole('heading', { name: 'Seguidor' })).toBeVisible();
+    await page.goto('/painel/mapeamento');
+    await expect(page.getByText('Novo seguidor').first()).toBeVisible();
+    await expectNoHorizontalScroll(page);
+  });
+
+  test('assinatura mostra uso x limites sem pagamento falso', async ({ page }) => {
+    const acc = await createAccount();
+    await loginUI(page, acc.email, acc.password);
+    await page.goto('/painel/assinatura');
+    await expect(page.getByText('Sons no soundboard')).toBeVisible();
+    await expect(page.getByText(/Pagamento online ainda não disponível/)).toBeVisible();
+    await expectNoHorizontalScroll(page);
   });
 });

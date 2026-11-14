@@ -9,7 +9,9 @@ Plataforma SaaS que transforma presentes, curtidas, comentários, seguidores e c
 | Área | Situação |
 |---|---|
 | Contas, login, recuperação de senha, MFA (TOTP), RBAC, multi-tenant | ✅ testado (integração + E2E) |
-| 5 jogos originais (Snake Live, Battle Arena, Avatar Race, Plinko Live, Survival Arena) em 9:16 e 16:9 | ✅ testado (unitário, determinismo, checkpoint) |
+| 11 jogos originais em 9:16 e 16:9 — Battle Arena v2, Corrida Animal, Arena do Tapa, Melancia Elástica, Cabo de Guerra, Guerra de Torres, Show de Perguntas, Avatar Race, Survival Arena, Snake Live, Plinko Live | ✅ testado (unitário, jogabilidade, determinismo, checkpoint) |
+| Game Engine v2: lobby, entrada por palavra, bots de treino, pódio, personagens desenhados | ✅ testado |
+| Biblioteca (categorias, busca, favoritos), overlay único por criador, soundboard, alertas, histórico, assinatura | ✅ testado (integração + E2E) |
 | Event Engine (validação, deduplicação, sequência de presentes, agregação de curtidas, regras, cooldowns, filas) | ✅ testado |
 | Simulador de eventos e cenários de falha | ✅ testado |
 | Automação do ciclo de vida da sessão e regras de automação | ✅ testado |
@@ -50,7 +52,7 @@ Guia completo: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 ## Testes
 
 ```bash
-pnpm test:unit            # 72 testes (motor de eventos, jogos, segurança, automação, vídeo)
+pnpm test:unit            # testes do motor de eventos, jogos, segurança, automação e vídeo
 pnpm test:integration     # 13 testes contra a pilha rodando (inclui isolamento multi-tenant)
 pnpm test:e2e             # 56 testes Playwright em 8 dispositivos
 pnpm test:chaos           # 8 cenários de falha (derruba processos locais!)
@@ -73,6 +75,6 @@ docs/      documentação completa (português)
 
 ## Documentação
 
-[Arquitetura](docs/ARCHITECTURE.md) · [Segurança](SECURITY.md) · [Implantação](docs/DEPLOYMENT.md) · [Desenvolvimento](docs/DEVELOPMENT.md) · [API](docs/API_DOCUMENTATION.md) · [Banco de dados](docs/DATABASE.md) · [Jogos](docs/GAMES.md) · [Integração TikTok](docs/TIKTOK_INTEGRATION.md) · [Transmissão](docs/STREAMING.md) · [Multiplataforma](docs/MULTIPLATFORM.md) · [Solução de problemas](docs/TROUBLESHOOTING.md) · [Auditoria de licenças](docs/LICENSE_AUDIT.md) · [Testes e resultados](docs/TESTING.md) · [Custos](docs/COSTS.md) · [Changelog](CHANGELOG.md)
+[Arquitetura](docs/ARCHITECTURE.md) · [Segurança](SECURITY.md) · [Implantação](docs/DEPLOYMENT.md) · [Desenvolvimento](docs/DEVELOPMENT.md) · [API](docs/API_DOCUMENTATION.md) · [Banco de dados](docs/DATABASE.md) · [Jogos](docs/GAMES.md) · [Integração TikTok](docs/TIKTOK_INTEGRATION.md) · [Transmissão](docs/STREAMING.md) · [Multiplataforma](docs/MULTIPLATFORM.md) · [Solução de problemas](docs/TROUBLESHOOTING.md) · [Auditoria de licenças](docs/LICENSE_AUDIT.md) · [Testes e resultados](docs/TESTING.md) · [Status da implementação](docs/IMPLEMENTATION_STATUS.md) · [Auditoria do projeto](docs/PROJECT_AUDIT.md) · [Pesquisa de referências](docs/REFERENCE_RESEARCH.md) · [Custos](docs/COSTS.md) · [Changelog](CHANGELOG.md)
 
 LIVE ARENA não é afiliada ao TikTok/ByteDance. Todos os jogos usam apenas pontuação virtual (sem apostas ou prêmios em dinheiro).

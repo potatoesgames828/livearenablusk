@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.0 — 14/11/2026 (produto v2)
+
+### Adicionado
+- Game Engine v2 (`MatchGame`): lobby com entrada por palavra no chat, bots de treino, limites de participantes, partida com tempo, tela de resultado com pódio, reinício; personagens humanoides e 8 animais desenhados em código.
+- Battle Arena v2 (jogo de referência) e seis jogos novos: Corrida Animal, Arena do Tapa, Melancia Elástica, Cabo de Guerra, Guerra de Torres e Show de Perguntas.
+- Biblioteca de jogos com categorias, busca, filtros, ordenação, favoritos e capas.
+- Overlay único do criador (`/overlay/<token>`) que acompanha a LIVE ativa e a troca de jogo, com fundo transparente, alertas e sons.
+- Soundboard (upload validado pelo conteúdo) e sons por momento do jogo; Alertas com modelos, variáveis e teste.
+- Event Engine: gatilho por palavra sem `!`, faixa de diamantes, evento personalizado, meta de espectadores.
+- Páginas: Configuração de eventos, Histórico, Assinatura (uso x limites, sem pagamento falso), Soundboard, Alertas; dashboard com atalhos, partidas recentes e avisos; navegação reorganizada.
+- E2E nas larguras 360, 390, 430, 768, 1024, 1366, 1920 (+320).
+
+### Corrigido
+- Guerra de Torres: presente grande registrava várias vitórias seguidas.
+- Configuração de eventos escondia os alertas quando não havia configuração de jogo.
+- Diálogo “Nova LIVE” aberto antes de carregar as configurações deixava “Criar LIVE” desabilitado.
+
 ## 0.1.0 — 14/11/2026 (primeira versão funcional)
 
 ### Adicionado

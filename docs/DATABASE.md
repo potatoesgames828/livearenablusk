@@ -39,3 +39,12 @@ Cada serviço tem seu pool (`connection_limit` na `DATABASE_URL`, padrão 10). C
 ## Backup
 
 Ver [DEPLOYMENT.md](DEPLOYMENT.md#backup-e-recuperação).
+
+## Migração v2 (`20261114183402_v2_biblioteca_som_alertas_overlay_usuario`)
+
+- `Overlay.sessionId` passa a ser opcional; novos campos `kind` (`SESSION` | `USER`) e `settings` (JSON). Overlays existentes continuam como `SESSION`.
+- `FavoriteGame` (tenant, usuário, jogo; único por trio).
+- `SoundAsset` (bytes no banco, ≤ 1 MB, `sha256`, `mime` detectado pelo conteúdo) — isolado por tenant.
+- `AlertRule` (gatilho JSON no formato das regras, mensagem com variáveis, emoji, cor, som, volume, duração, intervalo).
+- `SoundBinding` (som por momento do jogo; único por tenant + slot).
+- Planos ganham `maxSounds` e `maxAlerts` (planos antigos recebem o padrão; o seed acrescenta chaves novas sem sobrescrever limites editados).

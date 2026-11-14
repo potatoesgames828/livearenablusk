@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Radio, Trash2, ChevronRight } from 'lucide-react';
 import { Badge, Button, Card, EmptyState, Field, Input, Modal, PageHeader, Select, Skeleton, StatusPill, Switch, confirmAction, toast } from '@/components/ui';
@@ -20,6 +20,10 @@ export default function LivesPage() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: '', gameConfigId: '', connectionId: '', streamConfigId: '', autoMode: true });
   const [saving, setSaving] = useState(false);
+  // Se o diálogo abrir antes da lista de configurações carregar, seleciona a primeira assim que chegar.
+  useEffect(() => {
+    if (open && !form.gameConfigId && configs.data?.length) setForm((f) => ({ ...f, gameConfigId: configs.data![0]!.id }));
+  }, [open, form.gameConfigId, configs.data]);
 
   async function create() {
     setSaving(true);

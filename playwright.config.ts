@@ -19,15 +19,16 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
   use: { baseURL: BASE_URL, trace: 'off', screenshot: 'only-on-failure', locale: 'pt-BR' },
+  // Larguras pedidas: 360, 390, 430, 768, 1024, 1366 e 1920 (+ iPhone SE 320 como caso extremo).
   projects: [
-    { name: 'desktop-1440', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
-    { name: 'notebook-1280', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } } },
-    { name: 'tablet-ipad-retrato', use: chromiumOnly(devices['iPad (gen 7)']) },
-    { name: 'tablet-ipad-paisagem', use: chromiumOnly(devices['iPad (gen 7) landscape']) },
-    { name: 'tablet-android', use: { ...devices['Galaxy Tab S4'] } },
-    { name: 'iphone-13', use: chromiumOnly(devices['iPhone 13']) },
+    { name: 'w1920', use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 } } },
+    { name: 'w1366', use: { ...devices['Desktop Chrome'], viewport: { width: 1366, height: 768 } } },
+    { name: 'w1024-tablet', use: { ...devices['Desktop Chrome'], viewport: { width: 1024, height: 768 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 } },
+    { name: 'w768-tablet', use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 } },
+    { name: 'w430-phone', use: { ...devices['Pixel 7'], viewport: { width: 430, height: 932 } } },
+    { name: 'w390-iphone13', use: chromiumOnly(devices['iPhone 13']) },
+    { name: 'w360-android', use: { ...devices['Galaxy S9+'], viewport: { width: 360, height: 740 } } },
     { name: 'iphone-se', use: chromiumOnly(devices['iPhone SE']) },
-    { name: 'android-pixel-7', use: { ...devices['Pixel 7'] } },
     ...(all
       ? [
           { name: 'firefox-desktop', use: { ...devices['Desktop Firefox'] } },

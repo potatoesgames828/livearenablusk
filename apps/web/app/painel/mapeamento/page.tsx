@@ -63,7 +63,10 @@ export default function MappingPage() {
               </Card>
             );
           })}
-          <Card title={<span className="flex items-center gap-2"><Bell className="size-4" aria-hidden /> Alertas (todos os jogos)</span>} action={<Link href="/painel/alertas" className="inline-flex min-h-9 items-center gap-1 rounded-xl px-3 text-sm text-blue-300 hover:bg-white/5">Gerenciar <ArrowRight className="size-4" aria-hidden /></Link>}>
+        </div>
+      )}
+      <div className="mt-4">
+        <Card title={<span className="flex items-center gap-2"><Bell className="size-4" aria-hidden /> Alertas (todos os jogos)</span>} action={<Link href="/painel/alertas" className="inline-flex min-h-9 items-center gap-1 rounded-xl px-3 text-sm text-blue-300 hover:bg-white/5">Gerenciar <ArrowRight className="size-4" aria-hidden /></Link>}>
             {(alerts.data ?? []).length === 0 ? <p className="text-sm text-slate-400">Nenhum alerta. Crie em Alertas.</p> : (
               <ul className="space-y-1.5">
                 {alerts.data!.map((a) => (
@@ -75,8 +78,7 @@ export default function MappingPage() {
               </ul>
             )}
           </Card>
-        </div>
-      )}
+      </div>
     </>
   );
 }

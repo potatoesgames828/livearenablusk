@@ -85,8 +85,9 @@ export class TowerWar extends BaseGame<TowerSnapshot, State> {
 
   private add(team: number, n: number, by: string, viewerId?: string): void {
     if (this.b.phase !== 'playing') return;
-    const tower = this.st.towers[team as 0 | 1];
     for (let i = 0; i < n; i++) {
+      // a torre é recriada ao bater a meta: sempre pega a referência atual
+      const tower = this.st.towers[team as 0 | 1];
       tower.push({ id: this.nextId(), c: this.rng.pick(PALETTES[team]!), by });
       if (tower.length >= this.target()) {
         this.bankWin(team, by);

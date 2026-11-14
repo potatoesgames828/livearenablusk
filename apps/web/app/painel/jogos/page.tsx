@@ -119,7 +119,6 @@ export default function GamesPage() {
             {games.map((g) => (
               <article key={g.id} className="card group flex flex-col overflow-hidden p-0 transition hover:-translate-y-0.5 hover:border-white/20">
                 <div className="relative aspect-[4/3] overflow-hidden bg-slate-900">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={`/covers/${g.id}.webp`} alt={`Prévia do jogo ${g.name}`} loading="lazy" className="size-full object-cover object-top transition duration-300 group-hover:scale-105"
                     onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                   <span className="absolute left-3 top-3 text-3xl drop-shadow" aria-hidden>{g.emoji}</span>

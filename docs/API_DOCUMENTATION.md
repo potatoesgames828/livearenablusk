@@ -45,6 +45,14 @@ Corpo de configuração (`GameConfigBody`): `{ settings, rules: EventRule[], aut
 
 - `GET /connections/providers`, `GET/POST /connections`, `PUT/DELETE /connections/:id` (API key cifrada; nunca retornada).
 - `GET/POST /overlays`, `DELETE /overlays/:id`; público: `POST /public/overlay/:sessionId/bootstrap {token}` → ticket restrito + último estado.
+- **Overlay único do criador:** `GET /overlays/user` · `POST /overlays/user` (cria ou gera novo link, revogando o anterior; token mostrado uma vez) · `PUT /overlays/user/settings {showGame,showAlerts,playSounds,volume,alertPosition,idleCard}`. Público: `POST /public/overlay-user/bootstrap {token}` → `{ticket, sessionId|null, lastState, settings, soundBindings}` (chamado a cada 15 s); `GET /public/overlay-user/sound/:id?token=` (áudio do mesmo tenant).
+
+## Biblioteca, soundboard, alertas, conta
+
+- `GET /games` inclui `meta` (categorias, participantes, como entrar, duração, selo) e `favorite`; `POST|DELETE /games/:gameId/favorite`.
+- `GET /sounds` (sons, associações, limite do plano) · `POST /sounds?name=` com **corpo binário** (`application/octet-stream` ou `audio/*`, ≤ 1 MB; formato validado pelos bytes: MP3/OGG/WAV) · `GET /sounds/:id/file` · `DELETE /sounds/:id` · `PUT /sound-bindings {slot:'game.join'|'game.roundStart'|'game.victory', soundId|null, volume}`.
+- `GET/POST /alerts`, `PUT/DELETE /alerts/:id` (`{name,enabled,trigger,message,emoji,color,soundId,volume,durationMs,cooldownMs}`; `trigger` = mesmo formato das regras), `POST /alerts/:id/test` (envia às LIVES ativas, marcado como simulação).
+- `GET /account/usage` (plano, uso x limites, recursos, planos, `billing.available=false`) · `GET /account/history?gameId&page&pageSize` (partidas/rodadas).
 - `GET /streams/profiles`, `GET/POST /streams`, `PUT/DELETE /streams/:id` (chave mascarada), `POST /streams/sessions/:id/start|stop`, `GET /streams/sessions/:id/status`.
 - `GET /automations/catalog`, `GET/POST /automations`, `PUT/DELETE /automations/:id`.
 
@@ -66,4 +74,4 @@ Handshake: `auth: { ticket }`. Eventos do cliente: `session:subscribe` (ack `{ok
 
 ## Limites de requisição (por janela)
 
-Padrão 1200/min por IP; cadastro 5/10 min; login 60/min por IP + bloqueio por e-mail; esqueci senha 5/15 min; simulação 120/min por usuário; controle 60/min por usuário; início de sessão 20/min por usuário.
+Padrão 1200/min por IP; upload de som 30/min; bootstrap do overlay 30/min; cadastro 5/10 min; login 60/min por IP + bloqueio por e-mail; esqueci senha 5/15 min; simulação 120/min por usuário; controle 60/min por usuário; início de sessão 20/min por usuário.

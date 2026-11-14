@@ -11,9 +11,9 @@ function signal(type: ViewerSignalMessage['type'], viewer = 'v1', value = 1, tex
 }
 
 describe('catálogo de jogos', () => {
-  it('possui os cinco jogos com manifestos válidos', () => {
+  it('possui todos os jogos com manifestos válidos', () => {
     const ids = listManifests().map((m) => m.id).sort();
-    expect(ids).toEqual(['avatar-race', 'battle-arena', 'plinko-live', 'snake-live', 'survival-arena']);
+    expect(ids).toEqual(['animal-race', 'avatar-race', 'battle-arena', 'melon-pop', 'party-show', 'plinko-live', 'slap-arena', 'snake-live', 'survival-arena', 'tower-war', 'tug-of-war']);
     for (const m of listManifests()) {
       const cfg = defaultConfigFor(m);
       expect(validateConfigAgainstManifest(m, cfg)).toEqual([]);

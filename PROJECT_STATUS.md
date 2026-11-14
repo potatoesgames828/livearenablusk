@@ -2,7 +2,7 @@
 
 Atualizado em 14/11/2026. Branch: `ccr-8c9692c5-1sdtbd`.
 
-**Resumo:** primeira versão funcional e testada de ponta a ponta com o simulador. **Ainda não está pronta para produção comercial**: a fonte real de eventos do TikTok depende de licença/contrato, e faltam itens operacionais e jurídicos listados abaixo.
+**Resumo:** versão 0.2 (produto v2) — Game Engine com lobby/pódio, 11 jogos (7 novos/reformulados), biblioteca, overlay único, soundboard e alertas. Detalhes por fase em [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md). **Ainda não está pronta para produção comercial**: a fonte real de eventos do TikTok depende de licença/contrato, e faltam itens operacionais e jurídicos listados abaixo.
 
 ## Fases
 
@@ -13,7 +13,7 @@ Atualizado em 14/11/2026. Branch: `ccr-8c9692c5-1sdtbd`.
 | 3. Event Engine | ✅ | unitários + integração |
 | 4. Simulador (eventos, cenários, falhas) | ✅ | integração + caos |
 | 5. Game Engine (plugins, estados, tempo real) | ✅ | unitários (determinismo/checkpoint) |
-| 6. Cinco jogos | ✅ | unitários + revisão visual 9:16/16:9 |
+| 6. Jogos (11, sendo 7 da v2) | ✅ | unitários + jogabilidade + revisão visual 9:16/16:9 |
 | 7. TikTok Connector | 🟡 adaptador pronto; **fonte real bloqueada por licença/contrato** | TIKTOK_INTEGRATION.md |
 | 8. Automação | ✅ | integração (ciclo de vida) + unitários |
 | 9. Renderização e streaming | ✅ gravação validada · 🟡 RTMP e OBS reais não testados | ffprobe |
@@ -33,7 +33,7 @@ Cadastro, login, MFA, recuperação de senha (caixa de saída de dev), RBAC, iso
 | Saída RTMP | Chave/URL RTMP fornecida pela plataforma ao criador (nem toda conta possui) |
 | OBS | Testar com OBS 28+ real (código pronto, **sem teste automatizado nem com OBS real**) |
 | E-mail | `SMTP_URL` de um provedor transacional |
-| Cobrança | Planos e limites prontos; integração de pagamento não implementada (de propósito) |
+| Cobrança | Planos, limites e página de assinatura prontos; integração de pagamento não implementada (de propósito: exige escolha do gateway e contrato) |
 
 ## Limitações conhecidas
 

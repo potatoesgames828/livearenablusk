@@ -77,7 +77,6 @@ export function UserOverlay({ token, capture }: { token: string; capture: boolea
       setPending((n) => n + 1);
     }, next.durationMs);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alert, pending]);
 
   useEffect(() => {
@@ -143,7 +142,6 @@ export function UserOverlay({ token, capture }: { token: string; capture: boolea
       clearTimeout(timer);
       socket?.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, capture]);
 
   const showGame = settings?.showGame !== false && !!sessionId;

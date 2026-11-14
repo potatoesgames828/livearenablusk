@@ -4,11 +4,15 @@ Receber eventos **não** é transmitir vídeo. São etapas separadas, em process
 
 1. Recepção de eventos (connector) → 2. Processamento do jogo (game-runner) → 3. Renderização visual (navegador/overlay) → 4. Codificação (FFmpeg) → 5. Saída (OBS do usuário ou RTMP autorizado).
 
-## Opção A — OBS (recomendada)
+## Opção A — OBS com o overlay único (recomendada)
 
-1. Na sala de controle: **Saída de vídeo → Overlay → Gerar novo link**.
+1. Painel → **Overlay → Criar meu link de overlay** (o link `https://<seu-domínio>/overlay/ovl_…` aparece uma única vez; guarde-o).
 2. No OBS: Fontes → + → **Navegador** → cole o link → 1080×1920 (vertical) ou 1920×1080 → marque “Controlar áudio pelo OBS”.
 3. Transmita pelo OBS / TikTok LIVE Studio com a chave que a plataforma fornece a você.
+
+O overlay único **acompanha a LIVE ativa** da conta (consulta a cada 15 s) e a **troca de jogo** (o jogo vem no próprio estado), então não é preciso refazer a fonte no OBS ao trocar de jogo ou de LIVE. Fundo **transparente** fora do jogo; camada de **alertas** e **sons do soundboard**; o que aparece (jogo, alertas, sons, volume, posição dos alertas, aviso “aguardando LIVE”) é ajustado no painel e chega ao overlay sem recarregar. **Gerar novo link** revoga o anterior na hora (sockets conectados caem).
+
+Links avulsos de uma LIVE específica continuam disponíveis na sala de controle (**Saída de vídeo → Overlay → Gerar novo link**).
 
 **Automação pelo painel (PC):** aba **OBS** — conecta ao obs-websocket v5 local (`ws://localhost:4455`, OBS 28+), lista cenas, cria/atualiza a fonte “LIVE ARENA” com o link, troca de cena, inicia/para a transmissão e mostra FPS, CPU, congestionamento e quadros perdidos. A conexão sai do navegador direto para o OBS; a senha não passa pelos nossos servidores. *Não testado contra um OBS real neste ambiente.*
 
