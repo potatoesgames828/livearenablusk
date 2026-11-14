@@ -180,7 +180,10 @@ export class PartyShow extends BaseGame<PartySnapshot, State> {
     if (this.setting<boolean>('teamMode') && this.st.teams[v.id] === undefined) {
       let a = 0;
       let b = 0;
-      for (const t of Object.values(this.st.teams)) t === 0 ? a++ : b++;
+      for (const t of Object.values(this.st.teams)) {
+        if (t === 0) a++;
+        else b++;
+      }
       this.st.teams[v.id] = a <= b ? 0 : 1;
     }
     return name;

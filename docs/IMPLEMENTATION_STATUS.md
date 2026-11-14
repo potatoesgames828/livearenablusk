@@ -40,7 +40,7 @@ Legenda: ✅ concluído e testado · 🟡 parcial · ⏳ pendente · 🔒 depend
 
 | Suíte | Resultado |
 |---|---|
-| Unitários + integração (Vitest) | **142** testes passando (inclui 11 jogos × 5 testes automáticos, 9 testes de jogabilidade dos jogos novos, 6 do Event Engine v2, 4 de integração v2) |
+| Unitários + integração (Vitest) | **135** testes passando (inclui 11 jogos × 5 testes automáticos, 9 testes de jogabilidade dos jogos novos, 6 do Event Engine v2, 4 de integração v2) |
 | E2E (Playwright, Chromium) | **88/88** em 8 perfis: **1920, 1366, 1024 (tablet), 768 (tablet), 430, 390 (iPhone 13), 360 (Android), 320 (iPhone SE)** — ver [TESTING.md](TESTING.md) |
 | Revisão visual | capturas de todos os jogos novos em 9:16 e 16:9 (lobby, partida, resultado) |
 
