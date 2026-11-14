@@ -1,0 +1,18 @@
+{
+  "name": "@live-arena/stream-manager",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": { "build": "tsc -p tsconfig.json", "typecheck": "tsc -p tsconfig.json --noEmit", "start": "node dist/main.js" },
+  "dependencies": {
+    "@live-arena/database": "workspace:*",
+    "@live-arena/observability": "workspace:*",
+    "@live-arena/runtime": "workspace:*",
+    "@live-arena/security": "workspace:*",
+    "@live-arena/shared": "workspace:*",
+    "@live-arena/stream-engine": "workspace:*",
+    "bullmq": "5.63.0",
+    "ioredis": "5.8.2",
+    "playwright-core": "1.63.0"
+  }
+}

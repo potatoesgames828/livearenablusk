@@ -7,3 +7,5 @@ export * from './heartbeat';
 export * from './session-status';
 export * from './process';
 export * from './session-meta';
+export * from './session-control';
+export * from './ingest';

@@ -2,7 +2,7 @@
   "name": "live-arena",
   "private": true,
   "version": "0.1.0",
-  "description": "LIVE ARENA — plataforma SaaS de jogos interativos para TikTok LIVE",
+  "description": "LIVE ARENA \u2014 plataforma SaaS de jogos interativos para TikTok LIVE",
   "packageManager": "pnpm@10.28.0",
   "engines": {
     "node": ">=22.12.0"
@@ -33,9 +33,11 @@
     "@types/node": "22.19.1",
     "eslint": "9.39.1",
     "prettier": "3.6.2",
+    "socket.io-client": "4.8.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.46.4",
-    "vitest": "3.2.4"
+    "vitest": "3.2.4",
+    "@live-arena/database": "workspace:*"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

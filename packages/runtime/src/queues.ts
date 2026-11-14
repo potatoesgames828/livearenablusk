@@ -4,6 +4,7 @@ import type { Redis } from 'ioredis';
 /** Filas independentes por finalidade (uma fila travada não bloqueia as demais). */
 export const QUEUES = {
   ingest: 'events-ingest',
+  gameEvents: 'game-events',
   automation: 'automation',
   maintenance: 'maintenance',
   streamControl: 'stream-control',
