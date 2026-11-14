@@ -5,3 +5,4 @@ export * from './host';
 export * from './config';
 export * from './math';
 export * from './match';
+export * from './animals';

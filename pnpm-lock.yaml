@@ -351,6 +351,15 @@ importers:
         specifier: 5.8.2
         version: 5.8.2
 
+  games/animal-race:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
   games/avatar-race:
     dependencies:
       '@live-arena/game-engine':
@@ -480,6 +489,9 @@ importers:
 
   packages/games-catalog:
     dependencies:
+      '@live-arena/game-animal-race':
+        specifier: workspace:*
+        version: link:../../games/animal-race
       '@live-arena/game-avatar-race':
         specifier: workspace:*
         version: link:../../games/avatar-race
