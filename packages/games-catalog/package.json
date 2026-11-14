@@ -1,0 +1,21 @@
+{
+  "name": "@live-arena/games",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./render": { "types": "./dist/render.d.ts", "default": "./dist/render.js" }
+  },
+  "scripts": { "build": "tsc -b" },
+  "dependencies": {
+    "@live-arena/shared": "workspace:*",
+    "@live-arena/game-engine": "workspace:*",
+    "@live-arena/game-snake-live": "workspace:*",
+    "@live-arena/game-battle-arena": "workspace:*",
+    "@live-arena/game-avatar-race": "workspace:*",
+    "@live-arena/game-plinko-live": "workspace:*",
+    "@live-arena/game-survival-arena": "workspace:*"
+  }
+}

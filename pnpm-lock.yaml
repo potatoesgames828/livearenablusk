@@ -33,6 +33,60 @@ importers:
         specifier: 3.2.4
         version: 3.2.4(@types/node@22.19.1)(jiti@2.7.0)
 
+  games/avatar-race:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
+  games/battle-arena:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
+  games/game-template:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
+  games/plinko-live:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
+  games/snake-live:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
+  games/survival-arena:
+    dependencies:
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+
   packages/automation:
     dependencies:
       '@live-arena/shared':
@@ -66,6 +120,30 @@ importers:
 
   packages/game-engine:
     dependencies:
+      '@live-arena/shared':
+        specifier: workspace:*
+        version: link:../shared
+
+  packages/games-catalog:
+    dependencies:
+      '@live-arena/game-avatar-race':
+        specifier: workspace:*
+        version: link:../../games/avatar-race
+      '@live-arena/game-battle-arena':
+        specifier: workspace:*
+        version: link:../../games/battle-arena
+      '@live-arena/game-engine':
+        specifier: workspace:*
+        version: link:../game-engine
+      '@live-arena/game-plinko-live':
+        specifier: workspace:*
+        version: link:../../games/plinko-live
+      '@live-arena/game-snake-live':
+        specifier: workspace:*
+        version: link:../../games/snake-live
+      '@live-arena/game-survival-arena':
+        specifier: workspace:*
+        version: link:../../games/survival-arena
       '@live-arena/shared':
         specifier: workspace:*
         version: link:../shared
