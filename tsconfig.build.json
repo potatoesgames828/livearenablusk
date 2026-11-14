@@ -45,6 +45,12 @@
     },
     {
       "path": "packages/games-catalog"
+    },
+    {
+      "path": "packages/tiktok-adapter"
+    },
+    {
+      "path": "packages/stream-engine"
     }
   ]
 }

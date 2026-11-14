@@ -1,0 +1,16 @@
+{
+  "name": "@live-arena/tiktok-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": { "build": "tsc -b" },
+  "dependencies": {
+    "@live-arena/shared": "workspace:*",
+    "@live-arena/event-engine": "workspace:*",
+    "ws": "8.18.3"
+  },
+  "devDependencies": { "@types/ws": "8.18.1" },
+  "peerDependencies": { "tiktok-live-connector": ">=2.0.0" },
+  "peerDependenciesMeta": { "tiktok-live-connector": { "optional": true } }
+}
